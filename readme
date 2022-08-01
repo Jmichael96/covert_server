@@ -1,0 +1,2 @@
+## Deployments
+- run `gcloud run deploy covertservertest --region us-central1 --source .` for testing deployments
