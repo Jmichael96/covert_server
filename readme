@@ -1,2 +1,10 @@
 ## Deployments
 - run `gcloud run deploy covertservertest --region us-central1 --source .` for testing deployments
+
+## NODE VERSION
+`v10.24.1`
+
+## DB
+BigQuery
+---
+https://www.npmjs.com/package/@google-cloud/bigquery#using-the-client-library

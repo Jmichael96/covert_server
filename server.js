@@ -5,7 +5,6 @@ const PORT = process.env.PORT || 8080;
 const morgan = require("morgan");
 const cors = require("cors");
 const routes = require("./routes");
-const db = require('./services/dbConnect');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
