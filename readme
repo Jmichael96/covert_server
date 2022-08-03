@@ -2,7 +2,7 @@
 - run `gcloud run deploy covertservertest --region us-central1 --source .` for testing deployments
 
 ## NODE VERSION
-`v10.24.1`
+`v16.15.0`
 
 ## DB
 BigQuery
