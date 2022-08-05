@@ -1,6 +1,6 @@
 const router = require('express').Router();
-const startingRoutes = require('./starting');
+const reminder = require('./reminder');
 
-router.use('/startingRoute', startingRoutes);
+router.use(reminder);
 
 module.exports = router;

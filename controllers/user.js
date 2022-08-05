@@ -6,6 +6,7 @@ const { fetchQuery, insertQuery } = require("../services/db");
 const { Users } = require("../models/tableList");
 const cryptr = new Cryptr(process.env.CRYPTR_SECRET);
 const moment = require("moment");
+const { v4: uuidv4 } = require('uuid');
 
 /**
  * Creates a new user
@@ -36,9 +37,11 @@ exports.newUser = async (req, res, next) => {
   }
 
   await bcrypt
-    .hash(password, 8)
-    .then(async (hash) => {
+  .hash(password, 8)
+  .then(async (hash) => {
+
       let newUser = {
+        uuid: uuidv4(),
         name: name,
         email: email,
         password: hash,
@@ -50,6 +53,7 @@ exports.newUser = async (req, res, next) => {
 
       const payload = {
         user: {
+          uuid: newUser.uuid,
           name: newUser.name,
           email: newUser.email,
           phone: cryptr.decrypt(newUser.phone),
@@ -69,13 +73,18 @@ exports.newUser = async (req, res, next) => {
             });
           }
           return res.status(201).json({
-            message: 'User successfully created',
-            token: token,
+            message: 'User successfully created'
           });
         }
       );
     })
     .catch((err) => {
+      console.log(err);
+      if (err.message) {
+        return res.status(500).json({
+          message: err.message,
+        });
+      }
       const bigqueryError = err.errors[0].errors;
       if (bigqueryError) {
         return res.status(500).json({
@@ -83,9 +92,7 @@ exports.newUser = async (req, res, next) => {
           type: "BigQuery Error",
         });
       }
-      return res.status(500).json({
-        message: err.message,
-      });
+      
     });
 };
 
@@ -132,7 +139,7 @@ exports.login = async (req, res, next) => {
 
   const payload = {
     user: {
-      _id: parsedUser._id,
+      uuid: parsedUser.uuid,
       name: parsedUser.name,
       phone: cryptr.decrypt(parsedUser.phone),
       date_created: parsedUser.date_created['value']

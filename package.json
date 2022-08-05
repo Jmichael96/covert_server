@@ -3,11 +3,16 @@
   "version": "1.0.0",
   "description": "My own API used for various things and stuff",
   "main": "server.js",
+  "engines": {
+    "node": "= 16.15.0"
+  },
+  "engineStrict": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "NODE_ENV=production node server.js",
     "start:dev": "NODE_ENV=development nodemon server.js",
-    "seeds": "cd services && node seedDB.js"
+    "seeds": "cd services && node seedDB.js",
+    "dropSeeds": "cd services && node dropDB.js"
   },
   "repository": {
     "type": "git",
@@ -32,7 +37,9 @@
     "jvh-is-empty": "^1.0.0",
     "moment": "^2.29.4",
     "nodemailer": "^6.7.7",
-    "twilio": "^3.80.0"
+    "semver": "^7.3.7",
+    "twilio": "^3.80.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "morgan": "^1.10.0",

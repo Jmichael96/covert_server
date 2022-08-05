@@ -53,6 +53,12 @@ module.exports = {
   insertQuery: async (table, data) => {
     const bigquery = new BigQuery();
 
-    await bigquery.dataset(DATASET).table(table).insert(data)
+    try {
+      await bigquery.dataset(DATASET).table(table).insert(data);
+      
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
   }
 };

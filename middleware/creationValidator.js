@@ -74,6 +74,5 @@ module.exports = {
           "Please validate that all required fields are included in the request body",
       });
     }
-  },
-  validateReminder: async (req, res, next) => {},
+  }
 };

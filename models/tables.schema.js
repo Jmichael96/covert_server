@@ -2,6 +2,7 @@ module.exports = [
   {
     table: 'USERS',
     schema: [
+      { name: 'uuid', type: 'STRING', mode: 'REQUIRED' },
       { name: 'name', type: 'STRING', mode: 'REQUIRED' },
       { name: 'email', type: 'STRING', mode: 'REQUIRED' },
       { name: 'password', type: 'STRING', mode: 'REQUIRED' },
@@ -17,7 +18,9 @@ module.exports = [
       { name: 'date_due', type: 'DATE', mode: 'REQUIRED' },
       { name: 'reminder_date', type: 'DATE', mode: 'REQUIRED' },
       { name: 'repeat', type: 'STRING', mode: 'REQUIRED' },
-      { name: 'date_created', type: 'DATE', mode: 'REQUIRED' }
+      { name: 'date_created', type: 'DATE', mode: 'REQUIRED' },
+      { name: 'reminder_time', type: 'TIME', mode: 'REQUIRED' },
+      { name: 'reminder_message', type: 'STRING', mode: 'REQUIRED' }
     ]
   }
 ];

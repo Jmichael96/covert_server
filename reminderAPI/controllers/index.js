@@ -1,3 +1,3 @@
 module.exports = {
-     starting: require('./starting')
+     reminder: require('./reminder')
 };
