@@ -16,7 +16,7 @@ module.exports = [
       { name: 'user_id', type: 'STRING', mode: 'REQUIRED' },
       { name: 'reminder_type', type: 'STRING', mode: 'REQUIRED' },
       { name: 'date_due', type: 'DATE', mode: 'REQUIRED' },
-      { name: 'reminder_date', type: 'DATE', mode: 'REQUIRED' },
+      { name: 'notify', type: 'STRING', mode: 'REQUIRED' },
       { name: 'repeat', type: 'STRING', mode: 'REQUIRED' },
       { name: 'date_created', type: 'DATE', mode: 'REQUIRED' },
       { name: 'reminder_time', type: 'TIME', mode: 'REQUIRED' },

@@ -1,6 +1,9 @@
 const { isEmpty } = require("jvh-is-empty");
 const { insertQuery } = require("../../services/db");
 const moment = require('moment');
+const { Reminders } = require('../../models/tableList');
+const notifyDict = require('../services/dictionaries/notifyDict');
+const cloudscheduler = require('../services/cloudScheduler');
 
 /**
  * Create a new reminder
@@ -18,26 +21,28 @@ const moment = require('moment');
  * @property {string} req.body.repeat - When the user want's this to be re-occuring
  */
 exports.setReminder = async (req, res, next) => {
-  // FIXME 
-  // could possibly need to add the user email 
   let formData = {
     user_id: req.user.uuid,
     reminder_type: req.body.reminder_type,
     date_due: req.body.date_due,
-    reminder_date: req.body.reminder_date,
+    notify: notifyDict[req.body.notify],
     repeat: req.body.repeat,
     reminder_time: req.body.reminder_time,
     reminder_message: req.body.reminder_message,
     date_created: moment(new Date()).format("YYYY-MM-DD")
   };
-  console.log(formData);
+
   try {
+    await insertQuery(Reminders, [formData]);
+
     return res.status(201).json({
-      message: 'Your reminder has been successfully created',
+      message: 'Your reminder has been successfully created!',
       reminder: formData
     });
   } catch (err) {
-    
+    return res.status(500).json({
+      message: 'There was an error while creating a new reminder', 
+      serverMsg: err
+    });
   }
-  
 };

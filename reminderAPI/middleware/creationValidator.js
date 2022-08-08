@@ -3,6 +3,7 @@ const reminderTypeDict = require("../services/dictionaries/reminderTypeDict");
 const moment = require("moment");
 const repeatDict = require('../services/dictionaries/repeatDict');
 const requiredFields = require('../services/dictionaries/requiredReminderFields');
+const notifyDict = require('../services/dictionaries/notifyDict');
 
 const validateReminderType = (type) => {
   if (!reminderTypeDict[type]) return false;
@@ -21,6 +22,11 @@ const validateRepeat = (repeatType) => {
 
 const validateTime = (time) => moment(time, 'H:mm:s', true).isValid();
 
+const validateNotify = (dictNum) => {
+  if (!notifyDict[dictNum]) return false;
+  return true;
+};
+
 module.exports = {
   validateReminder: async (req, res, next) => {
     
@@ -32,6 +38,7 @@ module.exports = {
         });
       }
     }
+
     // check for missing required keys
     for (let key in requiredFields) {
       if (!req.body[key]) {
@@ -41,7 +48,7 @@ module.exports = {
       }
     }
 
-    const { reminder_type, date_due, reminder_date, repeat, reminder_time, reminder_message } = req.body;
+    const { reminder_type, date_due, notify, repeat, reminder_time } = req.body;
 
     if (!validateReminderType(reminder_type)) {
       return res.status(406).json({
@@ -56,9 +63,9 @@ module.exports = {
       });
     }
 
-    if (!validateDate(reminder_date)) {
+    if (!validateNotify(notify)) {
       return res.status(406).json({
-        message: "The reminder date you have submitted is incorrect. Please submit it in a <YYYY-MM-DD> format",
+        message: "",
       });
     }
 
@@ -74,7 +81,7 @@ module.exports = {
         message: 'Please submit a correct 24 hour time format <HH:MM:SS>'
       });
     }
-    
+
     next();
   }
 };
