@@ -1,7 +1,6 @@
 const { isEmpty } = require("jvh-is-empty");
 const reminderTypeDict = require("../services/dictionaries/reminderTypeDict");
 const moment = require("moment");
-const repeatDict = require('../services/dictionaries/repeatDict');
 const requiredFields = require('../services/dictionaries/requiredReminderFields');
 const notifyDict = require('../services/dictionaries/notifyDict');
 
@@ -16,14 +15,18 @@ const validateDate = (date) => {
 };
 
 const validateRepeat = (repeatType) => {
-  if (!repeatDict[repeatType]) return false;
-  return true;
+  return repeatType === false || repeatType === true;
 };
 
-const validateTime = (time) => moment(time, 'H:mm:s', true).isValid();
+const validateTime = (time) => moment(time, 'H:mm', true).isValid();
 
 const validateNotify = (dictNum) => {
   if (!notifyDict[dictNum]) return false;
+  return true;
+};
+
+const validateAlertDays = (num) => {
+  if (typeof(num) !== 'number' || num < 0) return false;
   return true;
 };
 
@@ -41,14 +44,14 @@ module.exports = {
 
     // check for missing required keys
     for (let key in requiredFields) {
-      if (!req.body[key]) {
+      if (req.body[key] == null) {
         return res.status(406).json({
           message: `You're missing the required field ${key}`
         });
       }
     }
 
-    const { reminder_type, date_due, notify, repeat, reminder_time } = req.body;
+    const { reminder_type, date_due, notify, alert_days_prior, repeat, reminder_time } = req.body;
 
     if (!validateReminderType(reminder_type)) {
       return res.status(406).json({
@@ -65,20 +68,27 @@ module.exports = {
 
     if (!validateNotify(notify)) {
       return res.status(406).json({
-        message: "",
+        message: "The notify value you have inputed does not match any of the available options",
+        options: notifyDict
+      });
+    }
+
+    if (!validateAlertDays(alert_days_prior)) {
+      return res.status(406).json({
+        message: 'Please make sure the alert_days_prior field is of type Number and is >= 0'
       });
     }
 
     if (!validateRepeat(repeat)) {
       return res.status(406).json({
         message: "You have selected the wrong repeat type. Look below to view your options",
-        options: Object.keys(repeatDict)
+        options: [true, false]
       });
     }
 
     if (!validateTime(reminder_time)) {
       return res.status(406).json({
-        message: 'Please submit a correct 24 hour time format <HH:MM:SS>'
+        message: 'Please submit a correct 24 hour time format <HH:MM>'
       });
     }
 

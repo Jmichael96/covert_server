@@ -8,3 +8,14 @@
 BigQuery
 ---
 https://www.npmjs.com/package/@google-cloud/bigquery#using-the-client-library
+
+
+## CRON JOBS
+* * * * *
+0 1 2 3 4
+
+0 = Minute
+1 = Hour
+2 = Day (month)
+3 = Month
+4 = Day (week)

@@ -1,13 +1,18 @@
-// const dateText = '2017-05-09T01:30:00.123Z';
-// const date = new Date(dateText);
+const moment = require('moment');
+const mtz = require('moment-timezone');
+const { dynamic_notif, non_dynamic_notif } = require('./decodeNotify');
 
-// const cron = dateToCron(date);
-module.exports = (date) => {
-  const minutes = date.getMinutes();
-  const hours = date.getHours();
-  const days = date.getDate();
-  const months = date.getMonth() + 1;
-  const dayOfWeek = date.getDay();
+module.exports = (date, notify, alert_days_prior) => {
+  // get minutes and convert hours to utc
+  let convertedToUTC = mtz.tz(date, 'UTC');
+  const minutes = moment(convertedToUTC).minute();
+  const hours = moment(convertedToUTC).hours();
+  let concatJob = `${minutes} ${hours}`;
 
-  return `${minutes} ${hours} ${days} ${months} ${dayOfWeek}`;
+  if (non_dynamic_notif[notify]) {
+    
+    return concatJob += non_dynamic_notif[notify];
+  } else {
+    return concatJob += dynamic_notif[notify](convertedToUTC, alert_days_prior);
+  }
 };
