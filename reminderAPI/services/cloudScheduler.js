@@ -40,8 +40,10 @@ module.exports = async (reminderData, jobName, endpoint) => {
         httpMethod: "POST",
         body: Buffer.from(JSON.stringify(constructedBodyObj)).toString('base64'), // must use a base64 str for this request
         headers: {
-          'client-id': process.env.GCP_ID,
-          'client-secret': process.env.GCP_SECRET,
+          'client-id': process.env.CLIENT_ID,
+          'client-secret': process.env.CLIENT_SECRET,
+          'gcp-client-id': process.env.GCP_ID,
+          'gcp-client-secret': process.env.GCP_SECRET,
           'Content-Type': 'application/json'
         }
       },

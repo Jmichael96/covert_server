@@ -70,6 +70,6 @@ exports.setReminder = async (req, res, next) => {
  * @property {date} req.body.reminder_date - When the user want's to be reminded of said reminder
  * @property {string} req.body.repeat - When the user want's this to be re-occuring
  */
-exports.remindUser = async (req, res, next) => {
+exports.notifyUser = async (req, res, next) => {
 
 };
