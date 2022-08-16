@@ -66,24 +66,19 @@ exports.setReminder = async (req, res, next) => {
  * @param {object} request - Express request
  * @param {object} response - Express response
  * @param {callback} next - Express next function
- * @property {string} req.user._id - User ID to connect user
- * @property {string} req.body.reminder_type - The type of reminder
- * @property {date} req.body.date_due - The due date of the reminder
- * @property {date} req.body.reminder_date - When the user want's to be reminded of said reminder
- * @property {string} req.body.repeat - When the user want's this to be re-occuring
+ * @property {string} req.body.cronJobName 
+ * @property {string} req.body.reminderId
+ * @property {string} req.body.userId 
+ * @property {boolean} req.body.repeat 
+ * @property {string} req.body.reminderMessage 
+ * @property {date} req.body.dateDue 
+ * @property {string} req.body.notify 
+ * @property {integer} req.body.alertDaysPrior 
+ * @property {string} req.body.reminderType 
+ * @property {object} res.user - User body is passed in
  */
 exports.notifyUser = async (req, res, next) => {
-  const { 
-    uuid, 
-    reminderType, 
-    dateDue, 
-    alertDaysPrior, 
-    reminderMessage,
-    notify,
-    repeat,
-  } = req.body;
-
-  const user = res.user;
-
-
+  res.status(200).json({
+    message: 'User notified successfully'
+  });
 };

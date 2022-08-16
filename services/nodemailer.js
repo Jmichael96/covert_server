@@ -27,7 +27,7 @@ module.exports = async (email, subject, html) => {
             console.error(error);
             throw new Error(`There was an error in Nodemailer ${error.message}`);
         } else {
-            console.log('Email sent: ' + info.response);
+            console.error('Email sent: ' + info.response);
         }
     });
 };

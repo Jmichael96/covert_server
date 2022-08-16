@@ -31,6 +31,24 @@ const concatWhereConditions = (columnData) => {
   }
 };
 
+const concatUpdateConditions = (columnData) => {
+  let updateString = "";
+
+  if (!isEmpty(columnData)) {
+    for (let key in columnData) {
+      let colName = columnData[key].colName;
+      let colVal = columnData[key].colVal;
+
+      if (key == 0) {
+        updateString += ` ${colName}=${addQueryQuotes(colVal)}`;
+      } else if (key >= 1) {
+        updateString += `, ${colName}=${addQueryQuotes(colVal)}`;
+      }
+    }
+  } 
+  return updateString;
+};
+
 module.exports = {
   fetchQuery: async (table, columnData) => {
     const bigquery = new BigQuery();
@@ -57,7 +75,26 @@ module.exports = {
       await bigquery.dataset(DATASET).table(table).insert(data);
       
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      throw err;
+    }
+  },
+  updateQuery: async (table, data) => {
+    const bigquery = new BigQuery();
+    let query = `UPDATE ${DATASET}.${table.toUpperCase()} SET ${concatUpdateConditions(data.setConditions)} ${concatWhereConditions(data.columnData)}`;
+    
+    console.log(query);
+
+    try {
+      const options = {
+        query: query,
+        location: 'US'
+      };
+      const [rows] = await bigquery.query(options);
+      console.log('Rows:');
+      rows.forEach(row => console.log(row));
+    } catch (err) {
+      console.error(err);
       throw err;
     }
   }

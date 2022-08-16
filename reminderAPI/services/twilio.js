@@ -13,6 +13,7 @@ module.exports = async (to, msg) => {
     })
     .then((message) => console.log(message.sid))
     .catch((err) => {
+      console.error(`There was a problem with Twilio:: ${err}`);
       throw new Error(`There was a problem with Twilio:: ${err}`);
     });
 };

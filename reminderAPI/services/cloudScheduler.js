@@ -4,13 +4,7 @@ const moment = require('moment');
 const CLOUD_SCHEDULER_PARENT = process.env.CLOUD_SCHEDULER_PARENT;
 const PROD_URL = process.env.PROD_URL;
 const cronJobBuilder = require('./cronJobBuilder');
-
-async function authorize() {
-  const auth = new google.auth.GoogleAuth({
-    scopes: ["https://www.googleapis.com/auth/cloud-platform"],
-  });
-  return await auth.getClient();
-};
+const authorizeGCP = require('./authorizeGCP');
 
 module.exports = async (reminderData, jobName, endpoint) => {
   const { uuid, user_id, date_due, reminder_time, alert_days_prior, notify, reminder_message, repeat, reminder_type } = reminderData;
@@ -20,9 +14,11 @@ module.exports = async (reminderData, jobName, endpoint) => {
   
   const schedule = cronJobBuilder(utcDate, notify, alert_days_prior);
     
-  const authClient = await authorize();
-
+  const authClient = await authorizeGCP();
+  
+  const cronJobName = `${CLOUD_SCHEDULER_PARENT}/jobs/${jobName}`;
   const constructedBodyObj = {
+    cronJobName: cronJobName,
     reminderId: uuid,
     userId: user_id,
     reminderMessage: reminder_message,
@@ -36,7 +32,7 @@ module.exports = async (reminderData, jobName, endpoint) => {
   const request = {
     parent: CLOUD_SCHEDULER_PARENT,
     resource: {
-      name: `${CLOUD_SCHEDULER_PARENT}/jobs/${jobName}`,
+      name: cronJobName,
       httpTarget: {
         uri: `${PROD_URL}${endpoint}`,
         httpMethod: "POST",

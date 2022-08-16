@@ -21,6 +21,10 @@ router.post('/set_reminder', auth, creationValidator.validateReminder, reminder.
  * @private
  * @param {string} path - Express path
  * @param {callback} middleware - Validates GCP client headers
+ * @param {callback} middleware - Validates that the correct req body is passed in
+ * @param {callback} middleware - Passes in the user data to the next middleware 
+ * @param {callback} middleware - Notifies the user according to the type of notification reminder
+ * @param {callback} middleware - Double checks to see if the reminder is re-occuring
  * @param {callback} middleware - Express middleware
  */
 router.post('/notify', 

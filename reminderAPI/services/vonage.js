@@ -17,7 +17,7 @@ const sendText = async (from, to, text) => {
       if (responseData.messages[0]["status"] === "0") {
         console.log("Message sent successfully.");
       } else {
-        console.log(
+        console.error(
           `Message failed with error: ${responseData.messages[0]["error-text"]}`
         );
       }
