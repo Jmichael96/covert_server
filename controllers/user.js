@@ -6,7 +6,7 @@ const { fetchQuery, insertQuery } = require("../services/db");
 const { Users } = require("../models/tableList");
 const cryptr = new Cryptr(process.env.CRYPTR_SECRET);
 const moment = require("moment");
-const { v4: uuidv4 } = require('uuid');
+const { generateCustomUuid } = require('custom-uuid');
 
 /**
  * Creates a new user
@@ -41,7 +41,7 @@ exports.newUser = async (req, res, next) => {
   .then(async (hash) => {
 
       let newUser = {
-        uuid: uuidv4(),
+        uuid: generateCustomUuid(`${name.replace(' ', '_')}.${email}.${phone}`, 35),
         name: name,
         email: email,
         password: hash,

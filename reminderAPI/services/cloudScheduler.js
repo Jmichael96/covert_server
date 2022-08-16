@@ -13,7 +13,7 @@ async function authorize() {
 };
 
 module.exports = async (reminderData, jobName, endpoint) => {
-  const { date_due, reminder_time, alert_days_prior, notify, reminder_message } = reminderData;
+  const { user_id, date_due, reminder_time, alert_days_prior, notify, reminder_message, repeat } = reminderData;
 
   let utcMoment = moment.utc(`${date_due}T${reminder_time}`);
   let utcDate = new Date(utcMoment);
@@ -21,28 +21,45 @@ module.exports = async (reminderData, jobName, endpoint) => {
   const schedule = cronJobBuilder(utcDate, notify, alert_days_prior);
     
   const authClient = await authorize();
+
+  const constructedBodyObj = {
+    userId: user_id,
+    reminderMessage: reminder_message,
+    dateDue: date_due,
+    notify: notify,
+    repeat: repeat,
+    alertDaysPrior: alert_days_prior
+  };
+  
   const request = {
     parent: CLOUD_SCHEDULER_PARENT,
     resource: {
       name: `${CLOUD_SCHEDULER_PARENT}/jobs/${jobName}`,
       httpTarget: {
         uri: `${PROD_URL}${endpoint}`,
-        httpMethod: "GET",
-        body: ''
+        httpMethod: "POST",
+        body: Buffer.from(JSON.stringify(constructedBodyObj)).toString('base64'), // must use a base64 str for this request
+        headers: {
+          'client-id': process.env.GCP_ID,
+          'client-secret': process.env.GCP_SECRET,
+          'Content-Type': 'application/json'
+        }
       },
       schedule: schedule,
-      description: reminder_message
+      description: reminder_message,
+      timeZone: 'America/Chicago'
     },
-    auth: authClient,
+    auth: authClient
   };
-  
+
   try {
     // const response = (await cloudscheduler.projects.locations.jobs.list(request)).data
-    // const response = (
-    //   await cloudscheduler.projects.locations.jobs.create(request)
-    // ).data;
+    const response = (
+      await cloudscheduler.projects.locations.jobs.create(request)
+    ).data;
     // TODO: Change code below to process the `response` object:
-    // console.log(JSON.stringify(response, null, 2));
+    console.log(JSON.stringify(response, null, 2));
+    console.log(response);
   } catch (err) {
     console.error(err);
   }

@@ -4,6 +4,7 @@ const moment = require('moment');
 const { Reminders } = require('../../models/tableList');
 const notifyDict = require('../services/dictionaries/notifyDict');
 const cloudScheduler = require('../services/cloudScheduler');
+const { generateCustomUuid } = require('custom-uuid');
 
 /**
  * Create a new reminder
@@ -35,11 +36,11 @@ exports.setReminder = async (req, res, next) => {
 
   try {
 
-    const jobName = `${req.user.phone}_${formData.notify.split(' ').join('_')}_${formData.date_due}`
-    const apiEndpoint = '/api/notify';
-
-    // await insertQuery(Reminders, [formData]);
+    const jobName = `${req.user.name.replace(' ', '_')}${generateCustomUuid(`${formData.user_id}${req.user.phone}`, 20)}_${formData.notify.split(' ').join('_')}`
+    const apiEndpoint = '/api/api/covert_server/reminders/notify';
+ 
     await cloudScheduler(formData, jobName, apiEndpoint);
+    // await insertQuery(Reminders, [formData]);
 
     return res.status(201).json({
       message: 'Your reminder has been successfully created! You will recieve a message shortly stating your schedule is up and running',
@@ -54,23 +55,21 @@ exports.setReminder = async (req, res, next) => {
   }
 };
 
-var localDate = new Date();
-var localMoment = moment();
-var utcMoment = moment.utc();
-var utcDate = new Date( utcMoment.format() );
+/**
+ * Initiate reminder protocol
+ * @name post/notify
+ * @function
+ * @returns {object}
+ * @private
+ * @param {object} request - Express request
+ * @param {object} response - Express response
+ * @param {callback} next - Express next function
+ * @property {string} req.user._id - User ID to connect user
+ * @property {string} req.body.reminder_type - The type of reminder
+ * @property {date} req.body.date_due - The due date of the reminder
+ * @property {date} req.body.reminder_date - When the user want's to be reminded of said reminder
+ * @property {string} req.body.repeat - When the user want's this to be re-occuring
+ */
+exports.remindUser = async (req, res, next) => {
 
-//These are all the same
-// console.log( 'localData unix = ' + localDate.valueOf() );
-// console.log( 'localMoment unix = ' + localMoment.valueOf() );
-// console.log( 'utcMoment unix = ' + utcMoment.valueOf() );
-
-// //These formats are different
-// console.log( 'localDate = ' + localDate );
-// console.log( 'localMoment string = ' + localMoment.format() );
-// console.log( 'utcMoment string = ' + utcMoment.format() );
-// console.log( 'utcDate  = ' + utcDate ); 
-
-// //One to show conversion
-// console.log( 'localDate as UTC format = ' + moment.utc( localDate ).format() );
-// console.log( 'localDate as UTC unix = ' + moment.utc( localDate ).valueOf() );
-
+};
