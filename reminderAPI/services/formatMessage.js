@@ -1,0 +1,22 @@
+const moment = require('moment');
+const mtz = require('moment-timezone');
+
+module.exports = formatMessage = (reminderType, msgObject) => {
+  const curDate = new Date();
+  const utcDate = mtz.tz(curDate, 'UTC');
+
+  const { userName, dateDue, reminderMessage, repeat, alertDaysPrior } = msgObject;
+
+  if (reminderType === 'phone') {
+    return `Hello, ${userName}! This is Covert_Server sending you a reminder message. 
+    \n ${reminderMessage} \n 
+    Date Due: ${alertDaysPrior <= 0 ? moment(utcDate).format('ll') : moment(utcDate).add(alertDaysPrior, 'days').format('ll')} \n
+    ${repeat ? 'Note: This is a re-occuring reminder' : 'Note: This reminder is not re-occuring'}
+    `;
+  } else if (reminderType === 'email') {
+    return `Hello, ${userName}! This is Covert_Server sending you a reminder message. <br />
+    ${reminderMessage} <br />
+    <b>Date Due:</b> ${alertDaysPrior <= 0 ? moment(utcDate).format('ll') : moment(utcDate).add(alertDaysPrior, 'days').format('ll')}  <br />
+    ${repeat ? '<b>Note:</b> This is a re-occuring reminder' : '<b>Note:</b> This reminder is not re-occuring'}`
+  }
+};

@@ -15,19 +15,19 @@ const smtpConfig = {
 const transporter = nodemailer.createTransport(smtpConfig);
 
 module.exports = async (email, subject, html) => {
-  let mailOptions = {
-    from: `Covert_Server ${NODEMAIL_EMAIL}`,
-    bcc: email,
-    subject: subject,
-    html: html
-};
+    let mailOptions = {
+        from: `Covert_Server ${NODEMAIL_EMAIL}`,
+        bcc: email,
+        subject: subject,
+        html: html
+    };
 
-transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-        console.error(error);
-        throw new Error(`There was an error in Nodemailer ${error.message}`);
-    } else {
-        console.log('Email sent: ' + info.response);
-    }
-});
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.error(error);
+            throw new Error(`There was an error in Nodemailer ${error.message}`);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
 };

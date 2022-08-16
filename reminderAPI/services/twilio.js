@@ -4,8 +4,8 @@ const twilio = require("twilio")(
 );
 const twilioNum = process.env.TWILIO_NUMBER;
 
-module.exports = (to, msg) => {
-  twilio.messages
+module.exports = async (to, msg) => {
+  await twilio.messages
     .create({
       body: msg,
       from: twilioNum,

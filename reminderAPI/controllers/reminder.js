@@ -23,6 +23,7 @@ const { generateCustomUuid } = require('custom-uuid');
  */
 exports.setReminder = async (req, res, next) => {
   let formData = {
+    uuid: generateCustomUuid(`${req.user.uuid}${req.body.date_due}`, 35),
     user_id: req.user.uuid,
     reminder_type: req.body.reminder_type,
     date_due: req.body.date_due,
@@ -31,7 +32,8 @@ exports.setReminder = async (req, res, next) => {
     repeat: req.body.repeat,
     reminder_time: req.body.reminder_time += ':00',
     reminder_message: req.body.reminder_message,
-    date_created: moment(new Date()).format("YYYY-MM-DD")
+    date_created: moment(new Date()).format("YYYY-MM-DD"),
+    terminated: false
   };
 
   try {
@@ -40,7 +42,7 @@ exports.setReminder = async (req, res, next) => {
     const apiEndpoint = '/api/api/covert_server/reminders/notify';
  
     await cloudScheduler(formData, jobName, apiEndpoint);
-    // await insertQuery(Reminders, [formData]);
+    await insertQuery(Reminders, [formData]);
 
     return res.status(201).json({
       message: 'Your reminder has been successfully created! You will recieve a message shortly stating your schedule is up and running',
@@ -71,5 +73,17 @@ exports.setReminder = async (req, res, next) => {
  * @property {string} req.body.repeat - When the user want's this to be re-occuring
  */
 exports.notifyUser = async (req, res, next) => {
+  const { 
+    uuid, 
+    reminderType, 
+    dateDue, 
+    alertDaysPrior, 
+    reminderMessage,
+    notify,
+    repeat,
+  } = req.body;
+
+  const user = res.user;
+
 
 };

@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const { reminder } = require('../controllers');
-const { validateReminder } = require('../middleware/creationValidator');
-const validateGCPClient = require('../middleware/validateGCPClient');
+const { updateExpiredReminder, initNotifyType, creationValidator, validateGCPClient, returnNotifiedUser } = require('../middleware');
+const auth = require('../../middleware/auth');
 
 /**
  * @name post/set_reminder
@@ -12,7 +12,7 @@ const validateGCPClient = require('../middleware/validateGCPClient');
  * @param {callback} middleware - Request body validation 
  * @param {callback} middleware - Express middleware
  */
-router.post('/set_reminder', validateReminder, reminder.setReminder);
+router.post('/set_reminder', auth, creationValidator.validateReminder, reminder.setReminder);
 
 /**
  * @name post/notify
@@ -23,6 +23,13 @@ router.post('/set_reminder', validateReminder, reminder.setReminder);
  * @param {callback} middleware - Validates GCP client headers
  * @param {callback} middleware - Express middleware
  */
-router.post('/notify', validateGCPClient, reminder.notifyUser);
+router.post('/notify', 
+  validateGCPClient, 
+  creationValidator.validateNotification,
+  returnNotifiedUser, 
+  initNotifyType,
+  updateExpiredReminder,
+  reminder.notifyUser
+);
 
 module.exports = router;

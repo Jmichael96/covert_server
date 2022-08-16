@@ -13,7 +13,7 @@ async function authorize() {
 };
 
 module.exports = async (reminderData, jobName, endpoint) => {
-  const { user_id, date_due, reminder_time, alert_days_prior, notify, reminder_message, repeat } = reminderData;
+  const { uuid, user_id, date_due, reminder_time, alert_days_prior, notify, reminder_message, repeat, reminder_type } = reminderData;
 
   let utcMoment = moment.utc(`${date_due}T${reminder_time}`);
   let utcDate = new Date(utcMoment);
@@ -23,12 +23,14 @@ module.exports = async (reminderData, jobName, endpoint) => {
   const authClient = await authorize();
 
   const constructedBodyObj = {
+    reminderId: uuid,
     userId: user_id,
     reminderMessage: reminder_message,
     dateDue: date_due,
     notify: notify,
     repeat: repeat,
-    alertDaysPrior: alert_days_prior
+    alertDaysPrior: alert_days_prior,
+    reminderType: reminder_type
   };
   
   const request = {
@@ -59,8 +61,6 @@ module.exports = async (reminderData, jobName, endpoint) => {
     const response = (
       await cloudscheduler.projects.locations.jobs.create(request)
     ).data;
-    // TODO: Change code below to process the `response` object:
-    console.log(JSON.stringify(response, null, 2));
     console.log(response);
   } catch (err) {
     console.error(err);

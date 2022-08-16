@@ -3,6 +3,7 @@ const reminderTypeDict = require("../services/dictionaries/reminderTypeDict");
 const moment = require("moment");
 const requiredFields = require('../services/dictionaries/requiredReminderFields');
 const notifyDict = require('../services/dictionaries/notifyDict');
+const notifyReqFields = require('../services/dictionaries/notifyReqFields');
 
 const validateReminderType = (type) => {
   if (!reminderTypeDict[type]) return false;
@@ -90,6 +91,27 @@ module.exports = {
       return res.status(406).json({
         message: 'Please submit a correct 24 hour time format <HH:MM>'
       });
+    }
+
+    next();
+  },
+  validateNotification: async (req, res, next) => {
+    // check for empty field values
+    for (let key in req.body) {
+      if (isEmpty(req.body[key])) {
+        return res.status(406).json({
+          message: `Please make sure you add a value to the ${key} field`
+        });
+      }
+    }
+
+    // check for missing required keys
+    for (let key in notifyReqFields) {
+      if (req.body[key] == null) {
+        return res.status(406).json({
+          message: `You're missing the required field ${key}`
+        });
+      }
     }
 
     next();
