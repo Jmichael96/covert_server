@@ -28,6 +28,12 @@ if (process.env.NODE_ENV === "production") {
 } else if ((process.env.NODE_ENV = "development")) {
   console.log("you are in the dev environment");
 
+  const version = engines.node;
+  if (!semver.satisfies(process.versions.node, version)) {
+    console.log(`This app requires Node v16.15.0`)
+    process.exit(1);
+  }
+
   app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET,PUT,POST,PATCH,DELETE");
@@ -37,12 +43,6 @@ if (process.env.NODE_ENV === "production") {
     );
     next();
   });
-}
-
-const version = engines.node;
-if (!semver.satisfies(process.versions.node, version)) {
-  console.log(`This app requires Node v16.15.0`)
-  process.exit(1);
 }
 
 app.use("/", async (req, res, next) => {

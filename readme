@@ -1,5 +1,6 @@
 ## Deployments
-- run `gcloud run deploy covertservertest --region us-central1 --source .` for testing deployments
+- Run `gcloud run deploy covertservertest --region us-central1 --source .` for testing deployments
+- To Deploy secrets, run `gcloud run services update covertservertest --region us-central1 --set-secrets="GCP_ID=COVERT_SECRETS:3,GCP_SECRET=COVERT_SECRETS:4, TWILIO_ACCOUNT_SID=COVERT_SECRETS:5,TWILIO_AUTH_TOKEN=COVERT_SECRETS:6,TWILIO_NUMBER=COVERT_SECRETS:7,JWT_SECRET=COVERT_SECRETS:8,GCP_DATASET=COVERT_SECRETS:9,CRYPTR_SECRET=COVERT_SECRETS:10,CLIENT_ID=COVERT_SECRETS:11,CLIENT_SECRET=COVERT_SECRETS:12"`
 
 ## NODE VERSION
 `v16.15.0`
@@ -19,3 +20,9 @@ https://www.npmjs.com/package/@google-cloud/bigquery#using-the-client-library
 2 = Day (month)
 3 = Month
 4 = Day (week)
+
+
+## PACKAGE DOCS
+- custom-uuid [link](https://www.npmjs.com/package/custom-uuid)
+- @google-cloud/scheduler [link](https://github.com/googleapis/nodejs-scheduler)
+- JSDOC [link](https://jsdoc.app/)
