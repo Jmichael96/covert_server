@@ -4,10 +4,17 @@ const bigquery = new BigQuery();
 const tables = require('../models/tableList');
 
 const dropTables = async () => {
-  const datasetId = process.env.GCP_DATASET;
-  for (let key in tables) {
-    await bigquery.dataset(datasetId).table(tables[key]).delete();
-    console.log(`${tables[key]} successfully removed`);
+  const datasetId =
+    process.argv[2] === "prod"
+      ? process.env.PROD_DATASET
+      : process.env.DEV_DATASET;
+  try {
+    for (let key in tables) {
+      await bigquery.dataset(datasetId).table(tables[key]).delete();
+      console.log(`${tables[key]} successfully removed`);
+    }
+  } catch (err) {
+    console.error(JSON.parse(err.response.body));
   }
 };
 

@@ -9,7 +9,8 @@
 BigQuery
 ---
 https://www.npmjs.com/package/@google-cloud/bigquery#using-the-client-library
-
+- Seed `(prod)npm run seeds -- prod || (dev) npm run seeds`
+- Drop `(prod)npm run dropSeeds -- prod || (dev) npm run dropSeeds`
 
 ## CRON JOBS
 * * * * *

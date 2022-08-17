@@ -1,25 +1,34 @@
-require("dotenv").config({ path: '../.env' });
+require("dotenv").config({ path: "../.env" });
 const { BigQuery } = require("@google-cloud/bigquery");
 const bigquery = new BigQuery();
-const tables = require('../models/tables.schema');
+const tables = require("../models/tables.schema");
 
 const createTable = async (tableName, schema) => {
-  const datasetId = process.env.GCP_DATASET;
+  const datasetId =
+    process.argv[2] === "prod"
+      ? process.env.PROD_DATASET
+      : process.env.DEV_DATASET;
   const options = {
     schema: schema,
-    location: 'US'
+    location: "US",
   };
-  const [table] = await bigquery.dataset(datasetId).createTable(tableName, options);
+  const [table] = await bigquery
+    .dataset(datasetId)
+    .createTable(tableName, options);
   return table;
 };
 
-(async function() {
+(async function () {
   let tablesCreated = [];
 
-  // create tables
-  for (let tableData of tables) {
-    const createdTable = await createTable(tableData.table, tableData.schema);
-    tablesCreated.push(createdTable.id);
+  try {
+    // create tables
+    for (let tableData of tables) {
+      const createdTable = await createTable(tableData.table, tableData.schema);
+      tablesCreated.push(createdTable.id);
+    }
+    console.log(`Tables created: ${tablesCreated}`);
+  } catch (err) {
+    console.error(JSON.parse(err.response.body));
   }
-  console.log(`Tables created: ${tablesCreated}`);
-}());
+})();
