@@ -26,6 +26,7 @@
   "homepage": "https://github.com/Jmichael96/covert_server.com#readme",
   "dependencies": {
     "@google-cloud/bigquery": "^6.0.1",
+    "@google-cloud/scheduler": "^3.0.2",
     "@vonage/server-sdk": "^2.11.2",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",

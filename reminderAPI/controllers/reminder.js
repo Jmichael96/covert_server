@@ -39,9 +39,10 @@ exports.setReminder = async (req, res, next) => {
   try {
 
     const jobName = `${req.user.name.replace(' ', '_')}${generateCustomUuid(`${formData.user_id}${req.user.phone}`, 20)}_${formData.notify.split(' ').join('_')}`
-    const apiEndpoint = '/api/api/covert_server/reminders/notify';
- 
-    await cloudScheduler(formData, jobName, apiEndpoint);
+    const apiEndpoint = '/api/covert_server/reminders/notify';
+    let replacementChars = { '@': 0, '.': 2 };
+    // replace the jobName characters that match the above object keys
+    await cloudScheduler(formData, jobName.replace(/[@.]/g, (m) => replacementChars[m]), apiEndpoint);
     await insertQuery(Reminders, [formData]);
 
     return res.status(201).json({
