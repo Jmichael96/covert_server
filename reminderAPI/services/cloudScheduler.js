@@ -6,6 +6,7 @@ const PROD_URL = process.env.PROD_URL;
 const cronJobBuilder = require('./cronJobBuilder');
 const authorizeGCP = require('./authorizeGCP');
 const scheduler = require('@google-cloud/scheduler');
+const nodemailer = require('../../services/nodemailer');
 
 module.exports = async (reminderData, jobName, endpoint) => {
   const { uuid, user_id, date_due, reminder_time, alert_days_prior, notify, reminder_message, repeat, reminder_type } = reminderData;
@@ -87,7 +88,14 @@ module.exports = async (reminderData, jobName, endpoint) => {
     //   await cloudscheduler.projects.locations.jobs.create(request)
     // ).data;
     const [response] = await client.createJob(request);
-    console.log(response);
+    let newData = {
+      jobLocation: response.name,
+      jobDescription: response.description,
+      state: response.state,
+      schedule: '0 16 17 8 *',
+      update: response.userUpdateTime
+    };
+    await nodemailer('jeffrey.vanhorn@yahoo.com', 'New Cron Job', `${JSON.stringify(newData)}`);
   } catch (err) {
     console.error(err);
   }

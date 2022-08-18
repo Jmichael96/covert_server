@@ -3,11 +3,15 @@ const { google } = require("googleapis");
 const cloudscheduler = google.cloudscheduler("v1");
 const { updateQuery } = require('../../services/db');
 const { Reminders } = require('../../models/tableList');
-
+const queryParams = {
+  setConditions: [{ colName: 'terminated', colVal: true }],
+  columnData: [{ colName: 'user_id', colVal: `2fo.n2aalfnrefo6rvmaim8omh3flnfVhmf`}, { colName: 'uuid', colVal: 'n0-2ffrmf.nnnf2n-2mnf6a2282om02n2of' }]
+};
+updateQuery('REMINDERS', queryParams);
 module.exports = async (req, res, next) => {
   const { 
     cronJobName,
-    uuid, 
+    reminderId, 
     repeat,
   } = req.body;
 
@@ -28,7 +32,7 @@ module.exports = async (req, res, next) => {
 
       const queryParams = {
         setConditions: [{ colName: 'terminated', colVal: true }],
-        columnData: [{ colName: 'user_id', colVal: user.uuid}, { colName: 'uuid', colVal: uuid }]
+        columnData: [{ colName: 'user_id', colVal: user.uuid}, { colName: 'uuid', colVal: reminderId }]
       };
 
       await updateQuery(Reminders, queryParams);

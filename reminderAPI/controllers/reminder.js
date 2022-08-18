@@ -22,8 +22,10 @@ const { generateCustomUuid } = require('custom-uuid');
  * @property {string} req.body.repeat - When the user want's this to be re-occuring
  */
 exports.setReminder = async (req, res, next) => {
+  let replacementChars = { '@': 0, '.': 2, '-': 4 };
+  let uuidCombo = `${req.user.uuid}${req.body.date_due}`.replace(/[@.-]/g, (m) => replacementChars[m]);
   let formData = {
-    uuid: generateCustomUuid(`${req.user.uuid}${req.body.date_due}`, 35),
+    uuid: generateCustomUuid(uuidCombo, 35),
     user_id: req.user.uuid,
     reminder_type: req.body.reminder_type,
     date_due: req.body.date_due,
@@ -40,9 +42,9 @@ exports.setReminder = async (req, res, next) => {
 
     const jobName = `${req.user.name.replace(' ', '_')}${generateCustomUuid(`${formData.user_id}${req.user.phone}`, 20)}_${formData.notify.split(' ').join('_')}`
     const apiEndpoint = '/api/covert_server/reminders/notify';
-    let replacementChars = { '@': 0, '.': 2 };
+    
     // replace the jobName characters that match the above object keys
-    await cloudScheduler(formData, jobName.replace(/[@.]/g, (m) => replacementChars[m]), apiEndpoint);
+    await cloudScheduler(formData, jobName.replace(/[@.-]/g, (m) => replacementChars[m]), apiEndpoint);
     await insertQuery(Reminders, [formData]);
 
     return res.status(201).json({

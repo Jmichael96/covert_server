@@ -25,7 +25,7 @@ const concatWhereConditions = (columnData) => {
         whereString += ` AND ${colName}=${addQueryQuotes(colVal)}`;
       }
     }
-    return (whereString += ";");
+    return (whereString += "");
   } else {
     return (whereString += ";");
   }
@@ -40,9 +40,9 @@ const concatUpdateConditions = (columnData) => {
       let colVal = columnData[key].colVal;
 
       if (key == 0) {
-        updateString += ` ${colName}=${addQueryQuotes(colVal)}`;
+        updateString += `${colName}=${addQueryQuotes(colVal)}`;
       } else if (key >= 1) {
-        updateString += `, ${colName}=${addQueryQuotes(colVal)}`;
+        updateString += `,'${colName}'=${addQueryQuotes(colVal)}`;
       }
     }
   } 
@@ -81,9 +81,9 @@ module.exports = {
   },
   updateQuery: async (table, data) => {
     const bigquery = new BigQuery();
-    let query = `UPDATE ${DATASET}.${table.toUpperCase()} SET ${concatUpdateConditions(data.setConditions)} ${concatWhereConditions(data.columnData)}`;
+    let query = `UPDATE ${DATASET}.${table.toUpperCase()} SET ${concatUpdateConditions(data.setConditions)}${concatWhereConditions(data.columnData)}`;
     
-    console.log(query);
+    console.log('QUERY ===============>>>>>>>>>', query);
 
     try {
       const options = {
@@ -91,11 +91,9 @@ module.exports = {
         location: 'US'
       };
       const [rows] = await bigquery.query(options);
-      console.log('Rows:');
       rows.forEach(row => console.log(row));
     } catch (err) {
-      console.error(err);
-      throw err;
+      throw err.response.body;
     }
   }
 };
