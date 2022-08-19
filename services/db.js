@@ -42,7 +42,7 @@ const concatUpdateConditions = (columnData) => {
       if (key == 0) {
         updateString += `${colName}=${addQueryQuotes(colVal)}`;
       } else if (key >= 1) {
-        updateString += `,'${colName}'=${addQueryQuotes(colVal)}`;
+        updateString += `,${colName}=${addQueryQuotes(colVal)}`;
       }
     }
   } 
@@ -79,24 +79,28 @@ module.exports = {
       throw err;
     }
   },
-  updateQuery: async (table, data) => {
-    const bigquery = new BigQuery();
-    let query = `UPDATE ${DATASET}.${table.toUpperCase()} SET ${concatUpdateConditions(data.setConditions)}${concatWhereConditions(data.columnData)}`;
-    // query = `UPDATE
-    // \`${DATASET}.${table.toUpperCase()}\` SET terminated=true WHERE UUID='3m3021j_3r43_f2ojm8_e2438m32224jm4r'`;
+  updateQuery: async (table, data, cb) => {
+    const bigquery = new BigQuery({ 'projectId': 'covertservertest' });
+    let query = `UPDATE \`${DATASET}.${table.toUpperCase()}\` SET ${concatUpdateConditions(data.setConditions)}${concatWhereConditions(data.columnData)};`;
+ 
+    // query = `UPDATE \`${DATASET}.${table.toUpperCase()}\` SET terminated = true WHERE uuid=em43y3hemj23_438mev2mmmjj2ofyfm_e4H'`;
     console.log('QUERY ===============>>>>>>>>>', query);
+ 
+    const options = {
+      query: query,
+      location: 'US',
+      // useLegacySql: false
+    };
+    await bigquery.query(options, (err, data) => {
+      if (err) {
+        console.log('cb err !!!!!!!!!!========>>>>>>>>>>>>>>', err.response.body);
+        // throw err;
+        cb(err, data);
+        return;
+      }
 
-    try {
-      const options = {
-        query: query,
-        location: 'US',
-        useLegacySql: false
-      };
-      const [rows] = await bigquery.query(options);
-      rows.forEach(row => console.log(row));
-      console.log('updated row successfully ', rows);
-    } catch (err) {
-      throw err.response.body;
-    }
+      console.log('========>>>>>>>>>>>>>> Made it!!!! ========>>>>>>>>>>>>>> ', data);
+      cb(err, data);
+    });
   }
 };
