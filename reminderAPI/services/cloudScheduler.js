@@ -95,6 +95,13 @@ module.exports = async (reminderData, jobName, endpoint) => {
       schedule: '0 16 17 8 *',
       update: response.userUpdateTime
     };
+    let html = `
+    <p><b>Location:</b> ${newData.jobLocation}</p>
+    <p><b>Description:</b> ${newData.jobDescription}</p>
+    <p><b>State:</b> ${newData.state}</p>
+    <p><b>Schedule:</b> ${newData.schedule}</p>
+    <p><b>Update:</b> ${newData.update}</p>
+    `;
     await nodemailer('jeffrey.vanhorn@yahoo.com', 'New Cron Job', `${JSON.stringify(newData)}`);
   } catch (err) {
     console.error(err);

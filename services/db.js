@@ -82,16 +82,19 @@ module.exports = {
   updateQuery: async (table, data) => {
     const bigquery = new BigQuery();
     let query = `UPDATE ${DATASET}.${table.toUpperCase()} SET ${concatUpdateConditions(data.setConditions)}${concatWhereConditions(data.columnData)}`;
-    
+    // query = `UPDATE
+    // \`${DATASET}.${table.toUpperCase()}\` SET terminated=true WHERE UUID='3m3021j_3r43_f2ojm8_e2438m32224jm4r'`;
     console.log('QUERY ===============>>>>>>>>>', query);
 
     try {
       const options = {
         query: query,
-        location: 'US'
+        location: 'US',
+        useLegacySql: false
       };
       const [rows] = await bigquery.query(options);
       rows.forEach(row => console.log(row));
+      console.log('updated row successfully ', rows);
     } catch (err) {
       throw err.response.body;
     }

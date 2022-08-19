@@ -3,12 +3,16 @@ const { google } = require("googleapis");
 const cloudscheduler = google.cloudscheduler("v1");
 const { updateQuery } = require('../../services/db');
 const { Reminders } = require('../../models/tableList');
+const nodemailer = require('../../services/nodemailer');
+//{ colName: 'user_id', colVal: `2fo.n2aalfnrefo6rvmaim8omh3flnfVhmf`}, 
 const queryParams = {
   setConditions: [{ colName: 'terminated', colVal: true }],
-  columnData: [{ colName: 'user_id', colVal: `2fo.n2aalfnrefo6rvmaim8omh3flnfVhmf`}, { colName: 'uuid', colVal: 'n0-2ffrmf.nnnf2n-2mnf6a2282om02n2of' }]
+  columnData: [
+  { colName: 'uuid', colVal: 'f3e8mj3f2v8jm0m9o29_e99ffr8rom3_H_e' }]
 };
 updateQuery('REMINDERS', queryParams);
 module.exports = async (req, res, next) => {
+  console.log('REQ.BODY =======>>>>>>>> ', req.body);
   const { 
     cronJobName,
     reminderId, 
@@ -32,14 +36,15 @@ module.exports = async (req, res, next) => {
 
       const queryParams = {
         setConditions: [{ colName: 'terminated', colVal: true }],
-        columnData: [{ colName: 'user_id', colVal: user.uuid}, { colName: 'uuid', colVal: reminderId }]
+        columnData: [{ colName: 'uuid', colVal: reminderId }]
       };
-
+      // await nodemailer('jeffrey.vanhorn@yahoo.com', 'Query Params', `${JSON.stringify(queryParams)}`);
       await updateQuery(Reminders, queryParams);
 
       next();
     } catch (err) {
       console.error(err);
+      // await nodemailer('jeffrey.vanhorn@yahoo.com', 'QUERY ERROR', `${JSON.stringify(err)}`);
       return res.status(500).json({
         message: 'There was a problem shutting down your reminder. Please contact the owner for further details'
       });
