@@ -2,7 +2,7 @@ const { isEmpty } = require("jvh-is-empty");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Cryptr = require("cryptr");
-const { fetchQuery, insertQuery } = require("../services/db");
+const DB_Handler = require("../services/db");
 const { Users } = require("../models/tableList");
 const cryptr = new Cryptr(process.env.CRYPTR_SECRET);
 const moment = require("moment");
@@ -26,9 +26,9 @@ exports.newUser = async (req, res, next) => {
   const { name, email, password, phone } = req.body;
   const fetchingColData = [{ colName: "email", colVal: email }];
   const tableName = Users;
-
+  const db = new DB_Handler();
   // check to see if there is an existing user with the same email and phone #
-  let foundUser = await fetchQuery(tableName, fetchingColData);
+  let foundUser = await db.fetchQuery(tableName, fetchingColData);
 
   if (!isEmpty(foundUser)) {
     return res.status(401).json({
@@ -49,7 +49,7 @@ exports.newUser = async (req, res, next) => {
         date_created: moment(new Date()).format("YYYY-MM-DD"),
       };
 
-      await insertQuery(tableName, [newUser]);
+      await db.insertRow(tableName, newUser);
 
       const payload = {
         user: {
@@ -118,8 +118,8 @@ exports.login = async (req, res, next) => {
   }
   const tableName = Users;
   const fetchingColData = [{ colName: "email", colVal: email }];
-
-  let foundUser = await fetchQuery(tableName, fetchingColData);
+  const db = new DB_Handler();
+  let foundUser = await db.fetchQuery(tableName, fetchingColData);
 
   if (isEmpty(foundUser)) {
     return res.status(404).json({

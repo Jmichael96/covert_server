@@ -1,5 +1,5 @@
 const { isEmpty } = require("jvh-is-empty");
-const { insertQuery } = require("../../services/db");
+const DB_Handler = require("../../services/db");
 const moment = require('moment');
 const { Reminders } = require('../../models/tableList');
 const notifyDict = require('../services/dictionaries/notifyDict');
@@ -45,7 +45,8 @@ exports.setReminder = async (req, res, next) => {
     
     // replace the jobName characters that match the above object keys
     await cloudScheduler(formData, jobName.replace(/[@.-]/g, (m) => replacementChars[m]), apiEndpoint);
-    await insertQuery(Reminders, [formData]);
+    const db = new DB_Handler();
+    await db.insertRow(Reminders, formData);
 
     return res.status(201).json({
       message: 'Your reminder has been successfully created! You will recieve a message shortly stating your schedule is up and running',

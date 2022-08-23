@@ -11,6 +11,11 @@ const createTable = async (tableName, schema) => {
   const options = {
     schema: schema,
     location: "US",
+    streamingBuffer: {
+      estimatedBytes: "0",
+      estimatedRows: "0",
+      oldestEntryTime: "0",
+    },
   };
   const [table] = await bigquery
     .dataset(datasetId)
