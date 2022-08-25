@@ -1,8 +1,6 @@
 const { BigQuery } = require("@google-cloud/bigquery");
 const DATASET = process.env.GCP_DATASET;
 const { isEmpty } = require("jvh-is-empty");
-const schemas = require("../models/tables.schema");
-const tables = require("../models/tableList");
 const nodemailer = require('./nodemailer');
 
 class DB_Handler {
@@ -71,7 +69,7 @@ class DB_Handler {
     const dataRes = await job.getQueryResults(job);
   
     // Print the results
-    console.log('INSERTED ROW: =>>>>>>>>>>>>>>>>>>>>>', dataRes);
+    console.log('INSERTED ROW: =>>>>>>>>>>>>>>>>>>>>>');
   };
 
   async updateRow(table, updates, conditions) {
@@ -88,8 +86,7 @@ class DB_Handler {
       return job;
     } catch (err) {
       console.log('ERROR: =========>>>>>>>>>>');
-      nodemailer('jeffrey.vanhorn@yahoo.com', 'Error in update row method', `This is html err ${JSON.stringify(err)}`);
-      // console.log(err);
+      await nodemailer('jeffrey.vanhorn@yahoo.com', 'Error in update row method', `This is html err ${JSON.stringify(err)}`);
       throw err;
     }
   };
@@ -139,88 +136,6 @@ class DB_Handler {
       return value;
     }
   };
-
-  // buildSetStatement(schema) {
-  //   let strStmt = "";
-  //   for (let key in schema) {
-  //     let col = schema[key].name;
-  //     if (key == 0) {
-  //       strStmt = `tgt.${col}=src.${col}`;
-  //     } else {
-  //       strStmt += ` AND tgt.${col}=src.${col}`;
-  //     }
-  //   }
-  //   return strStmt;
-  // }
-
-  // buildCondition(conditions) {
-  //   let strStmt = "";
-  //   for (let key in conditions) {
-  //     let col = conditions[key];
-  //     if (key == 0) {
-  //       strStmt = `tgt.${col}=src.${col}`;
-  //     } else {
-  //       strStmt += ` AND tgt.${col}=src.${col}`;
-  //     }
-  //   }
-  //   return strStmt;
-  // }
-
-  // buildMergeQuery(table, schema, conditions) {
-  //   let onCondition = this.buildCondition(conditions);
-  //   let onStatement = this.buildSetStatement(schema);
-
-  //   let query = `MERGE INTO \`${this.DATASET}.${table}\` tgt
-  //   USING (SELECT * FROM \`${this.DATASET}.TMP_${table}\`) src
-  //   ON ${onCondition} WHEN MATCHED THEN UPDATE SET ${onStatement}`;
-  //   return query;
-  // }
-
-  // async doStuff() {
-  //   let insertQuery = `INSERT INTO \`covert_server_prod.REMINDERS\`
-  //   (uuid, user_id, reminder_type, date_due, alert_days_prior,
-  //   notify, repeat, reminder_time, reminder_message, date_created, terminated) 
-  //   VALUES ('2fV3m2nmh79iri7nfjkle2231', 'ecflngroig..rr3.9mVr3hye.V343fnh34h',
-  //   'phone', '2022-08-17', 0, 'on due date', false, '17:00:00', 'the time has come!', '2022-08-25',
-  //   false)`;
-  //   let updateQuery = `UPDATE \`covert_server_prod.REMINDERS\` SET terminated=true WHERE 
-  //   uuid='2fV3m2nmh79iri7nfjkle' 
-  //   AND user_id='ecflngroig..rr3.9mVr3hye.V343fnh34h'`;
-  //   const options = {
-  //     // Specify a job configuration to set optional job resource properties.
-  //     configuration: {
-  //       query: {
-  //         query: insertQuery,
-  //         useLegacySql: false,
-  //       },
-  //       labels: {'example-label': 'example-value'},
-  //     },
-  //   };
-  
-  //   // Make API request.
-  //   const response = await this.bigquery.createJob(options);
-  //   const job = response[0];
-  
-  //   // Wait for the query to finish
-  //   const dataRes = await job.getQueryResults(job);
-  
-  //   // Print the results
-  //   console.log('Rows: ', dataRes);
-  //   // rows.forEach(row => console.log(row));
-
-  // }
-}
-
-(async function(){
-  // const db = new DB_Handler();
-  // let colData = [{ colName: 'uuid', colVal: 'ecflngroig..rr3.9mVr3hye.V343fnh34h' }];
-  // const fetched = await db.fetchQuery('USERS', colData);
-  // console.log(fetched);
-  // await db.doStuff();
-  // let updates = [{ colName: 'terminated', colVal: true }];
-  // let conditions = [{ colName: 'uuid', colVal: '2fV3m2nmh79iri7nfjkle2231' }, { colName: 'user_id', colVal: 'ecflngroig..rr3.9mVr3hye.V343fnh34h' }];
-  // let res = await db.updateRow(tables.Reminders, updates, conditions);
-  // console.log('END RESPONSE: ', res);
-}());
+};
 
 module.exports = DB_Handler;

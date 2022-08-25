@@ -1,5 +1,3 @@
-// const { google } = require("googleapis");
-// const cloudscheduler = google.cloudscheduler("v1");
 const moment = require('moment');
 const CLOUD_SCHEDULER_PARENT = process.env.CLOUD_SCHEDULER_PARENT;
 const PROD_URL = process.env.PROD_URL;
@@ -53,10 +51,7 @@ module.exports = async (reminderData, jobName, endpoint) => {
       job: job,
       auth: authClient
     };
-    // const response = (await cloudscheduler.projects.locations.jobs.list(request)).data
-    // const response = (
-    //   await cloudscheduler.projects.locations.jobs.create(request)
-    // ).data;
+
     const [response] = await client.createJob(request);
     let newData = {
       jobLocation: response.name,
@@ -72,8 +67,9 @@ module.exports = async (reminderData, jobName, endpoint) => {
     <p><b>Schedule:</b> ${newData.schedule}</p>
     <p><b>Update:</b> ${newData.update}</p>
     `;
-    await nodemailer('jeffrey.vanhorn@yahoo.com', 'New Cron Job', `${JSON.stringify(newData)}`);
+    await nodemailer('jeffrey.vanhorn@yahoo.com', 'New Cron Job', html);
   } catch (err) {
-    console.error(err);
+    await nodemailer('jeffrey.vanhorn@yahoo.com', 'Error in cloudScheduler()', `${JSON.stringify(err)}`);
+    throw err;
   }
 };
