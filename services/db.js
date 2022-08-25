@@ -3,6 +3,7 @@ const DATASET = process.env.GCP_DATASET;
 const { isEmpty } = require("jvh-is-empty");
 const schemas = require("../models/tables.schema");
 const tables = require("../models/tableList");
+const nodemailer = require('./nodemailer');
 
 class DB_Handler {
   constructor() {
@@ -70,7 +71,7 @@ class DB_Handler {
     const dataRes = await job.getQueryResults(job);
   
     // Print the results
-    console.log('Rows: ', dataRes);
+    console.log('INSERTED ROW: =>>>>>>>>>>>>>>>>>>>>>', dataRes);
   };
 
   async updateRow(table, updates, conditions) {
@@ -86,7 +87,9 @@ class DB_Handler {
       let job = response[0];
       return job;
     } catch (err) {
-      console.log(err);
+      console.log('ERROR: =========>>>>>>>>>>');
+      nodemailer('jeffrey.vanhorn@yahoo.com', 'Error in update row method', `This is html err ${JSON.stringify(err)}`);
+      // console.log(err);
       throw err;
     }
   };
@@ -210,7 +213,9 @@ class DB_Handler {
 
 (async function(){
   // const db = new DB_Handler();
-
+  // let colData = [{ colName: 'uuid', colVal: 'ecflngroig..rr3.9mVr3hye.V343fnh34h' }];
+  // const fetched = await db.fetchQuery('USERS', colData);
+  // console.log(fetched);
   // await db.doStuff();
   // let updates = [{ colName: 'terminated', colVal: true }];
   // let conditions = [{ colName: 'uuid', colVal: '2fV3m2nmh79iri7nfjkle2231' }, { colName: 'user_id', colVal: 'ecflngroig..rr3.9mVr3hye.V343fnh34h' }];

@@ -20,17 +20,10 @@ module.exports = async (reminderData, jobName, endpoint) => {
   const authClient = await authorizeGCP();
   
   const cronJobName = `${CLOUD_SCHEDULER_PARENT}/jobs/${jobName}`;
-  // const constructedBodyObj = {
-  //   cronJobName: cronJobName,
-  //   reminderId: uuid,
-  //   userId: user_id,
-  //   reminderMessage: reminder_message,
-  //   dateDue: date_due,
-  //   notify: notify,
-  //   repeat: repeat,
-  //   alertDaysPrior: alert_days_prior,
-  //   reminderType: reminder_type
-  // };
+  const constructedBodyObj = {
+    cronJobName: cronJobName,
+    ...reminderData
+  };
 
   try {
     
@@ -41,7 +34,7 @@ module.exports = async (reminderData, jobName, endpoint) => {
       httpTarget: {
         uri: `${PROD_URL}${endpoint}`,
         httpMethod: "POST",
-        body: Buffer.from(JSON.stringify(reminderData)), // must use a base64 str for this request
+        body: Buffer.from(JSON.stringify(constructedBodyObj)), // must use a base64 str for this request
         headers: {
           'client-id': process.env.CLIENT_ID,
           'client-secret': process.env.CLIENT_SECRET,

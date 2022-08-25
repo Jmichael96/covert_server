@@ -1,14 +1,16 @@
 const { Users } = require("../../models/tableList");
-const { fetchQuery } = require("../../services/db");
+const DB_Handler = require("../../services/db");
 const { isEmpty } = require('jvh-is-empty');
 const Cryptr = require('cryptr');
 const cryptr = new Cryptr(process.env.CRYPTR_SECRET);
 
 module.exports = async (req, res, next) => {
-  const { userId } = req.body;
-  const fetchingColData = [{ colName: 'uuid', colVal: userId }];
+  const db = new DB_Handler();
 
-  let fetchedUser = await fetchQuery(Users, fetchingColData);
+  const { user_id } = req.body;
+  const fetchingColData = [{ colName: 'uuid', colVal: user_id }];
+
+  let fetchedUser = await db.fetchQuery(Users, fetchingColData);
 
   if (isEmpty(fetchedUser)) {
     return res.status(404).json({

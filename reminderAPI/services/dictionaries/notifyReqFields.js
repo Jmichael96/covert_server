@@ -1,9 +1,11 @@
 module.exports = {
-  'userId': true,
-  'reminderMessage': true,
-  'dateDue': true,
+  'uuid': true,
+  'reminder_message': true,
+  'date_due': true,
   'notify': true,
   'repeat': true,
-  'alertDaysPrior': true,
-  'reminderType': true
+  'alert_days_prior': true,
+  'reminder_type': true,
+  'user_id': true,
+  'reminder_time': true
 };

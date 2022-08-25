@@ -10,10 +10,10 @@ module.exports = async (req, res, next) => {
 
   const { 
     cronJobName,
-    reminderId, 
+    uuid, 
     repeat,
   } = req.body;
-
+  console.log(req.body);
   const user = res.user;
   
   if (repeat === true) {
@@ -25,20 +25,19 @@ module.exports = async (req, res, next) => {
       name: cronJobName,  
       auth: authClient,
     };
-  
+    // await nodemailer('jeffrey.vanhorn@yahoo.com', 'Cron job delete request', `${JSON.stringify(request)}`);
     try {
       await cloudscheduler.projects.locations.jobs.delete(request);
 
       const queryParams = {
         updates: [{ colName: 'terminated', colVal: true }],
-        conditions: [{ colName: 'uuid', colVal: reminderId }, { colName: 'user_id', colVal: user.uuid }]
+        conditions: [{ colName: 'uuid', colVal: uuid }, { colName: 'user_id', colVal: user.uuid }]
       };
-
+      await nodemailer('jeffrey.vanhorn@yahoo.com', 'QUERY PARAMS INSIDE UPDATEEXPIRED func', `query params: \n ${JSON.stringify(queryParams)}`);
       await db.updateRow(Reminders, queryParams.updates, queryParams.conditions);
 
       next();
     } catch (err) {
-      // console.error(err);
       await nodemailer('jeffrey.vanhorn@yahoo.com', 'QUERY ERROR', `${JSON.stringify(err)}`);
       return res.status(500).json({
         message: 'There was a problem shutting down your reminder. Please contact the owner for further details'
