@@ -26,6 +26,6 @@ module.exports = async (req, res, next) => {
     email: parsedUser.email,
     phone: cryptr.decrypt(parsedUser.phone)
   };
-
+  
   next();
 };
