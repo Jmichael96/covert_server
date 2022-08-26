@@ -62,7 +62,6 @@ class DB_Handler {
     
     const response = await this.bigquery.createJob(this.options);
 
-    console.log('res ==== ', response);
     const job = response[0];
   
     // Wait for the query to finish
