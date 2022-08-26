@@ -13,7 +13,7 @@ https://www.npmjs.com/package/@google-cloud/bigquery#using-the-client-library
 - Drop `(prod)npm run dropSeeds -- prod || (dev) npm run dropSeeds`
 
 ## CRON JOBS
-* * * * *
+
 0 1 2 3 4
 
 0 = Minute
