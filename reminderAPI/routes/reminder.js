@@ -9,6 +9,7 @@ const auth = require('../../middleware/auth');
  * @inner
  * @private
  * @param {string} path - Express path
+ * @param {callback} middleware - Validates user authentication
  * @param {callback} middleware - Request body validation 
  * @param {callback} middleware - Express middleware
  */
@@ -35,5 +36,16 @@ router.post('/notify',
   updateExpiredReminder,
   reminder.notifyUser
 );
+
+/**
+ * @name post/fetch_reminders
+ * @function
+ * @inner
+ * @private
+ * @param {string} path - Express path
+ * @param {callback} middleware - Validates user authentication
+ * @param {callback} middleware - Express middleware
+ */
+router.get('/fetch_reminders', auth, reminder.fetchReminders);
 
 module.exports = router;

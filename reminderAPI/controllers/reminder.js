@@ -86,3 +86,31 @@ exports.notifyUser = async (req, res, next) => {
     message: 'User notified successfully'
   });
 };
+
+/**
+ * Fetch user's reminders
+ * @name post/fetch_reminders
+ * @function
+ * @returns {object}
+ * @private
+ * @param {object} request - Express request
+ * @param {object} response - Express response
+ * @param {callback} next - Express next function
+ */
+exports.fetchReminders = async (req, res, next) => {
+  const db = new DB_Handler();
+  const fetchColData = [{ colName: 'user_id', colVal: req.user.uuid }];
+
+  let dbRes = await db.fetchQuery(Reminders, fetchColData);
+
+  if (isEmpty(dbRes)) {
+    return res.status(404).json({
+      message: 'Could not find the reminders associatated with your account'
+    });
+  }
+
+  return res.status(200).json({
+    message: 'Fetched reminders successfully',
+    reminders: dbRes
+  });
+};
