@@ -23,7 +23,8 @@ module.exports = [
       { name: 'date_created', type: 'DATE', mode: 'REQUIRED' },
       { name: 'reminder_time', type: 'TIME', mode: 'REQUIRED' },
       { name: 'reminder_message', type: 'STRING', mode: 'REQUIRED' },
-      { name: 'terminated', type: 'BOOLEAN', mode: 'REQUIRED' }
+      { name: 'terminated', type: 'BOOLEAN', mode: 'REQUIRED' },
+      { name: 'job_name', type: 'STRING', mode: 'REQUIRED' }
     ]
   }
 ];

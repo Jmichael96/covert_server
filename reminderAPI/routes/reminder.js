@@ -48,4 +48,15 @@ router.post('/notify',
  */
 router.get('/fetch_reminders', auth, reminder.fetchReminders);
 
+/**
+ * @name post/delete_reminder
+ * @function
+ * @inner
+ * @private
+ * @param {string} path - Express path
+ * @param {callback} middleware - Validates user authentication
+ * @param {callback} middleware - Express middleware
+ */
+router.delete('/delete_reminder', auth, reminder.deleteReminder);
+
 module.exports = router;

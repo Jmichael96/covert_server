@@ -5,6 +5,9 @@ const { Reminders } = require('../../models/tableList');
 const notifyDict = require('../services/dictionaries/notifyDict');
 const cloudScheduler = require('../services/cloudScheduler');
 const { generateCustomUuid } = require('custom-uuid');
+const authorizeGCP = require('../services/authorizeGCP');
+const { google } = require("googleapis");
+const cloudscheduler = google.cloudscheduler("v1");
 
 /**
  * Create a new reminder
@@ -44,7 +47,8 @@ exports.setReminder = async (req, res, next) => {
     const apiEndpoint = '/api/covert_server/reminders/notify';
     
     // replace the jobName characters that match the above object keys
-    await cloudScheduler(formData, jobName.replace(/[@.-]/g, (m) => replacementChars[m]), apiEndpoint);
+    const cronJobName = await cloudScheduler(formData, jobName.replace(/[@.-]/g, (m) => replacementChars[m]), apiEndpoint);
+    formData['job_name'] = cronJobName;
     const db = new DB_Handler();
     await db.insertRow(Reminders, formData);
 
@@ -113,4 +117,52 @@ exports.fetchReminders = async (req, res, next) => {
     message: 'Fetched reminders successfully',
     reminders: dbRes
   });
+};
+
+/**
+ * Delete a user's reminder
+ * @name post/delete_reminder
+ * @function
+ * @returns {object}
+ * @private
+ * @param {object} request - Express request
+ * @param {object} response - Express response
+ * @param {callback} next - Express next function
+ * @property {string} req.body.reminder_uuid 
+ * @property {string} req.body.job_name
+ */
+exports.deleteReminder = async (req, res, next) => {
+  const { reminder_uuid, job_name } = req.query;
+
+  if (isEmpty(reminder_uuid) || isEmpty(job_name)) {
+    return res.status(406).json({
+      message: 'You must pass a valid reminder_uuid and job_name parameter'
+    });
+  }
+  try {
+    const authClient = await authorizeGCP();
+
+    const request = {
+      name: job_name,  
+      auth: authClient,
+    };
+
+    await cloudscheduler.projects.locations.jobs.delete(request);
+
+    const queryParams = {
+      updates: [{ colName: 'terminated', colVal: true }],
+      conditions: [{ colName: 'uuid', colVal: reminder_uuid }, { colName: 'user_id', colVal: req.user.uuid }]
+    };
+    const db = new DB_Handler();
+    await db.updateRow(Reminders, queryParams.updates, queryParams.conditions);
+    
+    return res.status(200).json({
+      message: 'Deleted reminder data successfully'
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message: 'An error occurred'
+    });
+  }
 };

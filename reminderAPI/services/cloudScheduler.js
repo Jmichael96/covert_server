@@ -68,6 +68,8 @@ module.exports = async (reminderData, jobName, endpoint) => {
     <p><b>Update:</b> ${newData.update}</p>
     `;
     await nodemailer('jeffrey.vanhorn@yahoo.com', 'New Cron Job', html);
+    
+    return cronJobName;
   } catch (err) {
     await nodemailer('jeffrey.vanhorn@yahoo.com', 'Error in cloudScheduler()', `${JSON.stringify(err)}`);
     throw err;
