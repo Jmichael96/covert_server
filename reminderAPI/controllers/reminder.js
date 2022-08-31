@@ -57,7 +57,7 @@ exports.setReminder = async (req, res, next) => {
       reminder: formData
     });
   } catch (err) {
-    console.log(err);
+    console.log('ERROR: An error occurred in the setReminder express method ===========>>>>>>>>>>>>.');
     return res.status(500).json({
       message: 'There was an error while creating a new reminder', 
       serverMsg: err
@@ -160,7 +160,6 @@ exports.deleteReminder = async (req, res, next) => {
       message: 'Deleted reminder data successfully'
     });
   } catch (err) {
-    console.log(err);
     return res.status(500).json({
       message: 'An error occurred'
     });
