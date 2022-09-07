@@ -8,20 +8,20 @@ const cryptr = new Cryptr(process.env.CRYPTR_SECRET);
 const moment = require("moment");
 const { generateCustomUuid } = require('custom-uuid');
 
-/**
- * Creates a new user
- * @name post/new_user
- * @function
- * @returns {object}
- * @public
- * @param {object} request - Express request
- * @param {object} response - Express response
- * @param {callback} next - Express next function
- * @property {string} req.body.name - Full name of the user
- * @property {string} req.body.email - Email of user
- * @property {string} req.body.password - User password
- * @property {string} req.body.phone - Phone number of user
- */
+// /**
+//  * Creates a new user
+//  * @name post/new_user
+//  * @function
+//  * @returns {object}
+//  * @public
+//  * @param {object} request - Express request
+//  * @param {object} response - Express response
+//  * @param {callback} next - Express next function
+//  * @property {string} req.body.name - Full name of the user
+//  * @property {string} req.body.email - Email of user
+//  * @property {string} req.body.password - User password
+//  * @property {string} req.body.phone - Phone number of user
+//  */
 exports.newUser = async (req, res, next) => {
   const { name, email, password, phone } = req.body;
   const fetchingColData = [{ colName: "email", colVal: email }];

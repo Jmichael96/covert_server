@@ -12,7 +12,8 @@
     "start": "NODE_ENV=production node server.js",
     "start:dev": "NODE_ENV=development nodemon server.js",
     "seeds": "cd services && node seedDB.js",
-    "dropSeeds": "cd services && node dropDB.js"
+    "dropSeeds": "cd services && node dropDB.js",
+    "docs": "jsdoc -c jsdoc.conf"
   },
   "repository": {
     "type": "git",
@@ -46,6 +47,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "jsdoc-route-plugin": "^0.1.0",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.19"
   }

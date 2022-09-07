@@ -17,6 +17,7 @@ module.exports = async function (req, res, next) {
       }
       else {
         req.user = decoded.user;
+        console.log(req.user);
         next();
       }
     });

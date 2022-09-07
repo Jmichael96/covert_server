@@ -1,3 +1,4 @@
+const nodemailer = require('../../services/nodemailer');
 const twilio = require("twilio")(
   process.env.TWILIO_ACCOUNT_SID,
   process.env.TWILIO_AUTH_TOKEN
@@ -11,9 +12,12 @@ module.exports = async (to, msg) => {
       body: `This is a reminder from Covert Server. \n \n ${msg} \n \n To opt-out, reply STOP`,
       from: twilioNum,
       to: to,
-      messagingServiceSid: 'MG745d28b99a51a0d09e24b0669157f698'
+      messagingServiceSid: process.env.TWILIO_MESSAGE_SERVICE_SID
     })
-    .then((message) => console.log(message.sid))
+    .then(async (message) => {
+      console.log('============>>>>>>>>>>>', message.sid)
+      // await nodemailer('jeffrey.vanhorn@yahoo.com', 'twilio problem', `${JSON.stringify(message)}`);
+    })
     .catch((err) => {
       console.error(`There was a problem with Twilio:: ${err}`);
       throw new Error(`There was a problem with Twilio:: ${err}`);
