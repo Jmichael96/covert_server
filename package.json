@@ -9,8 +9,8 @@
   "engineStrict": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "NODE_ENV=production node server.js",
-    "start:dev": "NODE_ENV=development nodemon server.js",
+    "start": "export GOOGLE_APPLICATION_CREDENTIALS=/Users/JMV2RE4/Code/Node/covert_server/covertserverbq-api.json && NODE_ENV=production node server.js",
+    "start:dev": "export GOOGLE_APPLICATION_CREDENTIALS=/Users/JMV2RE4/Code/Node/covert_server/covertserverbq-api.json && NODE_ENV=development nodemon server.js",
     "seeds": "cd services && node seedDB.js",
     "dropSeeds": "cd services && node dropDB.js",
     "docs": "jsdoc -c jsdoc.conf"

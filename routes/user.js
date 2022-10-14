@@ -2,6 +2,8 @@ const router = require('express').Router();
 const UserController = require('../controllers/user');
 const { validateUser } = require('../middleware/creationValidator');
 const clientValidator = require('../middleware/clientValidator');
+const verifyRefreshToken = require('../middleware/verifyRefreshToken');
+const auth = require('../middleware/auth');
 
 /**
  * Create your new account with Covert Server
@@ -30,5 +32,33 @@ router.post('/new_user', clientValidator, validateUser, UserController.newUser);
  * @headerparam {String} Content-Type application/json
  */
 router.post('/login', UserController.login);
+
+/**
+ * @name get/load_user
+ * @private 
+ * Load the current authenticated user
+ */
+router.get('/load_user', auth, UserController.loadUser);
+
+/**
+ * @name post/logout
+ * @public 
+ * Logout the authenticated user
+ */
+router.post('/logout', UserController.logout);
+
+/**
+ * @name post/refresh_token
+ * @private 
+ * Load refresh token
+ */
+router.post('/refresh_token', auth, verifyRefreshToken, UserController.refreshToken);
+
+/**
+ * FIXME This is for testing
+ * @name get/secure
+ * @private 
+ */
+router.get('/secure', auth, UserController.secure);
 
 module.exports = router;

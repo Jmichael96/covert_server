@@ -9,6 +9,9 @@
 - BigQuery
 ---
 https://www.npmjs.com/package/@google-cloud/bigquery#using-the-client-library
+- Create a service account and follow the steps [link](https://console.cloud.google.com/projectselector2/iam-admin/serviceaccounts/create?supportedpurview=project&_ga=2.54470700.568419352.1663260887-1083794692.1658953165&_gac=1.251665915.1663260930.Cj0KCQjwmouZBhDSARIsALYcouqZf44vyzqzoBXyn_3A8BqLF_QfSAhpWGbLA1crZrYy7C9QmpTiDnYaAlQSEALw_wcB)
+- Navigate into the created service account and create a service key. Move it to the root directory of the project and change the file name.
+- Then add this export inside your alias file `export GOOGLE_APPLICATION_CREDENTIALS="KEY_PATH"`
 - Seed `(prod)npm run seeds -- prod || (dev) npm run seeds`
 - Drop `(prod)npm run dropSeeds -- prod || (dev) npm run dropSeeds`
 

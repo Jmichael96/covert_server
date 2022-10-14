@@ -12,25 +12,26 @@ class DB_Handler {
           useLegacySql: false
         }
       },
-      location: "US",
+      // location: "us-central1",
     };
     this.bigquery = new BigQuery();
+
     this.DATASET = DATASET;
   }
-
   async fetchQuery(table, columnData) {
     let query = `SELECT * FROM ${
       this.DATASET
     }.${table.toUpperCase()}${this.concatWhereConditions(columnData)}`;
 
-    this.options["query"] = query;
+    this.options.configuration.query.query = query;
 
     try {
-      const [job] = await this.bigquery.createQueryJob(this.options);
+      const [job] = await this.bigquery.createJob(this.options);
       const [rows] = await job.getQueryResults();
+      console.log('FETCHED DATA -------------------');
       return rows;
     } catch (err) {
-      console.error(err);
+      console.log('DB FETCH ERROR: =========>>>>>>>>>>');
       throw err;
     }
   };

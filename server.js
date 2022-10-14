@@ -7,7 +7,9 @@ const morgan = require("morgan");
 const routes = require("./routes");
 const semver = require('semver');
 const { engines } = require('./package.json');
+const cors = require('cors');
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
@@ -39,6 +41,7 @@ if (process.env.NODE_ENV === "production") {
     res.header("Access-Control-Allow-Methods", "GET,PUT,POST,PATCH,DELETE");
     res.header(
       "Access-Control-Allow-Headers",
+      "*",
       "Origin, X-Requested-With, Content-Type, Accept"
       );
       next();
