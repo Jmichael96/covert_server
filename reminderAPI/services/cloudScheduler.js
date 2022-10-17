@@ -57,7 +57,7 @@ module.exports = async (reminderData, jobName, endpoint) => {
       jobLocation: response.name,
       jobDescription: response.description,
       state: response.state,
-      schedule: '0 16 17 8 *',
+      schedule: `${schedule}`,
       update: response.userUpdateTime
     };
     let html = `
