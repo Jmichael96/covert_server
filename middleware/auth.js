@@ -1,9 +1,10 @@
 const jwt = require('jsonwebtoken');
 
 module.exports = async function (req, res, next) {
+  console.log('========>>>>>> INSIDE MIDDLEWARE FOR AUTH')
   // Get token from header
   const token = req.header('x-auth-token') || req.headers.authorization.replace('Bearer ', '') ;
-  console.log(token)
+  // console.log(token)
   // Check if not token
   if (!token) {
     return res.status(401).json({ message: 'You are not authorized!' });

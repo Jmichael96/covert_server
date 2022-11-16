@@ -7,8 +7,8 @@ const { Users } = require("../models/tableList");
 const cryptr = new Cryptr(process.env.CRYPTR_SECRET);
 const moment = require("moment");
 const { generateCustomUuid } = require('custom-uuid');
-let tokenList = {};
-const tokenExpiration = 3600;
+const tokenExpiration = '1h';
+
 // /**
 //  * Creates a new user
 //  * @name post/new_user

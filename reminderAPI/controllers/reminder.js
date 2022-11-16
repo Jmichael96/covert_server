@@ -102,21 +102,28 @@ exports.notifyUser = async (req, res, next) => {
  * @param {callback} next - Express next function
  */
 exports.fetchReminders = async (req, res, next) => {
-  const db = new DB_Handler();
-  const fetchColData = [{ colName: 'user_id', colVal: req.user.uuid }];
+  try {
+    const db = new DB_Handler();
+    const fetchColData = [{ colName: 'user_id', colVal: req.user.uuid }];
 
-  let dbRes = await db.fetchQuery(Reminders, fetchColData);
+    let dbRes = await db.fetchQuery(Reminders, fetchColData);
 
-  if (isEmpty(dbRes)) {
-    return res.status(404).json({
-      message: 'Could not find the reminders associatated with your account'
+    if (isEmpty(dbRes)) {
+      return res.status(404).json({
+        message: 'Could not find the reminders associatated with your account'
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Fetched reminders successfully',
+      reminders: dbRes
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message: 'An error occurred'
     });
   }
-
-  return res.status(200).json({
-    message: 'Fetched reminders successfully',
-    reminders: dbRes
-  });
 };
 
 /**
@@ -166,3 +173,39 @@ exports.deleteReminder = async (req, res, next) => {
   }
 };
 
+/**
+ * Fetch user's reminder
+ * @name get/fetch_reminder/:reminderId
+ * @function
+ * @returns {object}
+ * @private
+ * @param {object} request - Express request
+ * @param {object} response - Express response
+ * @param {callback} next - Express next function
+ */
+exports.fetchReminder = async (req, res, next) => {
+  if (isEmpty(req.params.reminderId)) {
+    return res.status(406).json({
+      message: 'Please make sure a reminder ID is passed in'
+    });
+  }
+  try {
+    const db = new DB_Handler();
+    const fetchColData = [{ colName: 'user_id', colVal: req.user.uuid }, { colName: 'uuid', colVal: req.params.reminderId }];
+    let dbRes = await db.fetchQuery(Reminders, fetchColData);
+
+    if (isEmpty(dbRes)) {
+      return res.status(404).json({
+        message: 'Could not find the reminder associatated with your account'
+      });
+    } 
+    return res.status(200).json({
+      message: 'Fetched reminder successfully',
+      reminder: dbRes[0]
+    });
+  } catch (err) {
+    return res.status(500).json({
+      message: 'An error occurred'
+    });
+  }
+};

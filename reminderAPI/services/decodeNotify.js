@@ -34,7 +34,6 @@ const non_dynamic_notif = {
   'daily': ' */1 * *',
 };
 
-
 module.exports = {
   dynamic_notif,
   non_dynamic_notif
