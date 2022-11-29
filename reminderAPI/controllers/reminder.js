@@ -1,13 +1,13 @@
-const { isEmpty } = require("jvh-is-empty");
-const DB_Handler = require("../../services/db");
+const { isEmpty } = require('jvh-is-empty');
+const DB_Handler = require('../../services/db');
 const moment = require('moment');
 const { Reminders } = require('../../models/tableList');
 const notifyDict = require('../services/dictionaries/notifyDict');
 const cloudScheduler = require('../services/cloudScheduler');
 const { generateCustomUuid } = require('custom-uuid');
 const authorizeGCP = require('../services/authorizeGCP');
-const { google } = require("googleapis");
-const cloudscheduler = google.cloudscheduler("v1");
+const { google } = require('googleapis');
+const cloudscheduler = google.cloudscheduler('v1');
 
 /**
  * Create a new reminder
@@ -37,18 +37,24 @@ exports.setReminder = async (req, res, next) => {
     repeat: req.body.repeat,
     reminder_time: req.body.reminder_time += ':00',
     reminder_message: req.body.reminder_message,
-    date_created: moment(new Date()).format("YYYY-MM-DD"),
-    terminated: false
+    date_created: moment(new Date()).format('YYYY-MM-DD'),
+    terminated: false,
+    price: req.body.price ? req.body.price : 0,
+    deposite: req.body.deposite ? true : false
   };
 
   try {
 
-    const jobName = `${req.user.name.replace(' ', '_')}${generateCustomUuid(`${formData.user_id}${req.user.phone}`, 20)}_${formData.notify.split(' ').join('_')}`
-    const apiEndpoint = '/api/covert_server/reminders/notify';
-    
-    // replace the jobName characters that match the above object keys
-    const cronJobName = await cloudScheduler(formData, jobName.replace(/[@.-]/g, (m) => replacementChars[m]), apiEndpoint);
-    formData['job_name'] = cronJobName;
+    if (process.env.NODE_ENV === 'production') {
+      const jobName = `${req.user.name.replace(' ', '_')}${generateCustomUuid(`${formData.user_id}${req.user.phone}`, 20)}_${formData.notify.split(' ').join('_')}`
+      const apiEndpoint = '/api/covert_server/reminders/notify';
+      
+      // replace the jobName characters that match the above object keys
+      const cronJobName = await cloudScheduler(formData, jobName.replace(/[@.-]/g, (m) => replacementChars[m]), apiEndpoint);
+      formData['job_name'] = cronJobName;
+    } else {
+      formData['job_name'] = 'test_job_name'
+    }
     const db = new DB_Handler();
     await db.insertRow(Reminders, formData);
 

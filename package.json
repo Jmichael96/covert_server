@@ -13,7 +13,8 @@
     "start:dev": "NODE_ENV=development nodemon server.js",
     "seeds": "cd services && node seedDB.js",
     "dropSeeds": "cd services && node dropDB.js",
-    "docs": "jsdoc -c jsdoc.conf"
+    "docs": "jsdoc -c jsdoc.conf",
+    "startprod:dev": "NODE_ENV=production nodemon server.js"
   },
   "repository": {
     "type": "git",

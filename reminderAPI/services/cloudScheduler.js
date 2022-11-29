@@ -14,7 +14,6 @@ module.exports = async (reminderData, jobName, endpoint) => {
   
   
   const schedule = cronJobBuilder(utcDate, notify, alert_days_prior);
-    
   const authClient = await authorizeGCP();
   
   const cronJobName = `${CLOUD_SCHEDULER_PARENT}/jobs/${jobName}`;
@@ -27,6 +26,7 @@ module.exports = async (reminderData, jobName, endpoint) => {
     
     const client = new scheduler.CloudSchedulerClient();
     const parent = client.locationPath(process.env.GCP_PROJECT, process.env.GCP_LOCATION);
+
     const job = {
       name: cronJobName,
       httpTarget: {
@@ -71,7 +71,8 @@ module.exports = async (reminderData, jobName, endpoint) => {
     
     return cronJobName;
   } catch (err) {
-    await nodemailer('jeffrey.vanhorn@yahoo.com', 'Error in cloudScheduler()', `${JSON.stringify(err)}`);
+    console.log(err);
+    // await nodemailer('jeffrey.vanhorn@yahoo.com', 'Error in cloudScheduler()', `${JSON.stringify(err)}`);
     throw err;
   }
 };
