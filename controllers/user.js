@@ -6,8 +6,8 @@ const DB_Handler = require("../services/db");
 const { Users } = require("../models/tableList");
 const cryptr = new Cryptr(process.env.CRYPTR_SECRET);
 const moment = require("moment");
-const { generateCustomUuid } = require('custom-uuid');
-const tokenExpiration = '1h';
+const { generateCustomUuid } = require("custom-uuid");
+const tokenExpiration = "1h";
 
 // /**
 //  * Creates a new user
@@ -38,11 +38,13 @@ exports.newUser = async (req, res, next) => {
   }
 
   await bcrypt
-  .hash(password, 8)
-  .then(async (hash) => {
-
+    .hash(password, 8)
+    .then(async (hash) => {
       let newUser = {
-        uuid: generateCustomUuid(`${name.replace(' ', '_')}.${email}.${phone}`, 35),
+        uuid: generateCustomUuid(
+          `${name.replace(" ", "_")}.${email}.${phone}`,
+          35
+        ),
         name: name,
         email: email,
         password: hash,
@@ -61,9 +63,13 @@ exports.newUser = async (req, res, next) => {
           date_created: newUser.date_created,
         },
       };
-      const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_TOKEN_LIFE });
-      const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_TOKEN_LIFE });
-      let response
+      const token = jwt.sign(payload, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_TOKEN_LIFE,
+      });
+      const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
+        expiresIn: process.env.JWT_TOKEN_LIFE,
+      });
+      let response;
       // jwt.sign(
       //   payload,
       //   process.env.JWT_SECRET,
@@ -95,7 +101,6 @@ exports.newUser = async (req, res, next) => {
           type: "BigQuery Error",
         });
       }
-      
     });
 };
 
@@ -147,13 +152,17 @@ exports.login = async (req, res, next) => {
         name: parsedUser.name,
         email: parsedUser.email,
         phone: cryptr.decrypt(parsedUser.phone),
-        date_created: parsedUser.date_created['value']
-      }
+        date_created: parsedUser.date_created["value"],
+      },
     };
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: tokenExpiration });
-    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: tokenExpiration });
-    
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: tokenExpiration,
+    });
+    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
+      expiresIn: tokenExpiration,
+    });
+
     let response = {
       message: `Welcome, ${payload.user.name}!`,
       personal_info: payload.user,
@@ -161,14 +170,14 @@ exports.login = async (req, res, next) => {
       refreshToken,
       header_parameters: {
         client_id: process.env.CLIENT_ID,
-        client_secret: process.env.CLIENT_SECRET
-      }
+        client_secret: process.env.CLIENT_SECRET,
+      },
     };
     return res.status(201).json(response);
   } catch (err) {
     return res.status(500).json({
-      message: 'There was a problem logging in. Please try again',
-      serverMsg: err.message
+      message: "There was a problem logging in. Please try again",
+      serverMsg: err.message,
     });
   }
 
@@ -180,25 +189,25 @@ exports.login = async (req, res, next) => {
   //     });
   //   }
   //   return res.status(201).json({
-      // message: `Welcome, ${payload.user.name}!`,
-      // personal_info: payload.user,
-      // token: token,
-      // header_parameters: {
-      //   client_id: process.env.CLIENT_ID,
-      //   client_secret: process.env.CLIENT_SECRET
-      // }
+  // message: `Welcome, ${payload.user.name}!`,
+  // personal_info: payload.user,
+  // token: token,
+  // header_parameters: {
+  //   client_id: process.env.CLIENT_ID,
+  //   client_secret: process.env.CLIENT_SECRET
+  // }
   //   });
   // });
 };
 
 /**
  * @name post/refresh_token
- * @private 
+ * @private
  * Load refresh token
  * Resource: https://medium.com/@had096705/build-authentication-with-refresh-token-using-nodejs-and-express-2b7aea567a3a
  */
 exports.refreshToken = async (req, res, next) => {
-  console.log('refresh token!!!!! ', req.body);
+  console.log("refresh token!!!!! ", req.body);
   try {
     const payload = {
       user: {
@@ -206,52 +215,61 @@ exports.refreshToken = async (req, res, next) => {
         name: req.user.name,
         email: req.user.email,
         phone: req.user.phone,
-        date_created: req.user.date_created
-      }
+        date_created: req.user.date_created,
+      },
     };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: tokenExpiration });
-    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: tokenExpiration });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: tokenExpiration,
+    });
+    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
+      expiresIn: tokenExpiration,
+    });
     return res.status(200).json({
-      message: 'Refreshed token successfully',
+      message: "Refreshed token successfully",
       user: payload.user,
       token,
-      refreshToken
+      refreshToken,
     });
   } catch (err) {
     return res.status(500).json({
-      message: 'There was a problem with your request. Please try again later'
+      message: "There was a problem with your request. Please try again later",
     });
-  }  
+  }
 };
 
 /**
  * FIXME This is for testing
  * @name get/secure
- * @private 
+ * @private
  */
 exports.secure = (req, res, next) => {
-  res.send('I am secure');
+  res.send("I am secure");
 };
 
 /**
  * @name get/load_user
- * @private 
+ * @private
  * Load the current authenticated user
  */
 exports.loadUser = async (req, res, next) => {
   if (isEmpty(req.user)) {
     return res.status(401).json({
-      serverMsg: 'The user is currently unauthenticated so we could not retrieve their information'
+      serverMsg:
+        "The user is currently unauthenticated so we could not retrieve their information",
     });
   } else if (!isEmpty(req.user)) {
     const db = new DB_Handler();
-    let fetchColData = [{ colName: 'uuid', colVal: req.user.uuid }, { colName: 'email', colVal: req.user.email }];
+    let fetchColData = [
+      { colName: "uuid", colVal: req.user.uuid },
+      { colName: "email", colVal: req.user.email },
+    ];
     const fetchedUser = await db.fetchQuery(Users, fetchColData);
     if (isEmpty(fetchedUser)) {
       return res.status(401).json({
-        serverMsg: 'The user is currently unauthenticated so we could not retrieve their information'
+        serverMsg:
+          "The user is currently unauthenticated so we could not retrieve their information",
       });
-    } 
+    }
     let decodedUser = fetchedUser[0];
     const payload = {
       user: {
@@ -259,20 +277,20 @@ exports.loadUser = async (req, res, next) => {
         name: decodedUser.name,
         email: decodedUser.email,
         phone: cryptr.decrypt(decodedUser.phone),
-        date_created: decodedUser.date_created['value']
-      }
+        date_created: decodedUser.date_created["value"],
+      },
     };
 
     return res.status(200).json({
-      message: 'Fetched user successfully',
+      message: "Fetched user successfully",
       user: {
         uuid: decodedUser.uuid,
         name: decodedUser.name,
         email: decodedUser.email,
         phone: cryptr.decrypt(decodedUser.phone),
-        date_created: decodedUser.date_created['value']
-      }
-    })
+        date_created: decodedUser.date_created["value"],
+      },
+    });
     // jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: 3600 }, (err, token) => {
     //   if (err) {
     //     return res.status(500).json({
@@ -287,19 +305,132 @@ exports.loadUser = async (req, res, next) => {
     //   });
     // });
   }
-};  
+};
 
 /**
  * @name post/logout
- * @public 
+ * @public
  * Logout the authenticated user
  */
 exports.logout = async (req, res, next) => {
-  const token = req.header('x-auth-token');
+  const token = req.header("x-auth-token");
   if (token) {
-    delete req.headers['x-auth-token']
+    delete req.headers["x-auth-token"];
   }
   return res.status(200).json({
-    message: 'Goodbye!'
+    message: "Goodbye!",
   });
+};
+
+/**
+ * Update User Info
+ * @name put/update_user_info
+ * @function
+ * @returns {object}
+ * @private
+ * @param {object} request - Express request
+ * @param {object} response - Express response
+ * @param {callback} next - Express next function
+ * @property {string} req.body.name - Name of user
+ * @property {string} req.body.email - Email of user
+ * @property {string} req.body.phone - Phone of user
+ * @property {string} req.body.password - Password of user
+ * @property {string} req.body.newPassword - New password of user
+ */
+exports.updateUserInfo = async (req, res, next) => {
+  const returnIfAllEmpty = () => {
+    if (
+      isEmpty(req.body.name) &&
+      isEmpty(req.body.email) &&
+      isEmpty(req.body.phone) &&
+      isEmpty(req.body.newPassword)
+    ) {
+      return false;
+    }
+    return true;
+  };
+
+  if (isEmpty(req.body.password)) {
+    return res.status(406).json({
+      message: "You must enter your current password in order to make updates ",
+    });
+  } else if (!returnIfAllEmpty()) {
+    return res.status(406).json({
+      message:
+        "You must update at least one field in this request in order for it to be valid",
+    });
+  }
+
+  try {
+    const db = new DB_Handler();
+    let updateColData = {
+      updates: [],
+      conditions: [{ colName: "uuid", colVal: req.user.uuid }],
+    };
+    let fetchColData = [{ colName: "uuid", colVal: req.user.uuid }];
+    let foundUser = await db.fetchQuery(Users, fetchColData);
+    if (isEmpty(foundUser)) {
+      return res.status(404).json({
+        message: "",
+      });
+    }
+    let parsedUser = foundUser[0];
+    let passwordValidated = await bcrypt.compare(
+      req.body.password,
+      parsedUser.password
+    );
+
+    if (!passwordValidated) {
+      return res.status(401).json({
+        message:
+          "Your credentials are invalid. Please try again or don't come back",
+      });
+    }
+
+    for (let i in req.body) {
+      switch (true) {
+        case !isEmpty(req.body[i]) && i === "name":
+          updateColData.updates.push({
+            colName: "name",
+            colVal: req.body.name,
+          });
+          break;
+        case !isEmpty(req.body[i]) && i === "email":
+          updateColData.updates.push({
+            colName: "email",
+            colVal: req.body.email,
+          });
+          break;
+        case !isEmpty(req.body[i]) && i === "phone":
+          updateColData.updates.push({
+            colName: "phone",
+            colVal: cryptr.encrypt(phone),
+          });
+          break;
+        case !isEmpty(req.body[i]) && i === "newPassword":
+          const hashedPassword = await bcrypt
+            .hash(req.body.newPassword, 8)
+            .then((hash) => hash);
+          updateColData.updates.push({
+            colName: "password",
+            colVal: hashedPassword,
+          });
+          break;
+        default:
+          break;
+      }
+    }
+
+    console.log(updateColData);
+
+    await db.updateRow(Users, updateColData.updates, updateColData.conditions);
+    return res.status(200).json({
+      message: "Your information has been saved",
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message: "An error occurred",
+    });
+  }
 };

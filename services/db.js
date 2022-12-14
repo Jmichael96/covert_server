@@ -77,7 +77,7 @@ class DB_Handler {
     let updatedString = this.concatUpdateConditions(updates);
     let conditionString = this.concatWhereConditions(conditions);
     let query = `UPDATE \`${this.DATASET}.${table}\` SET ${updatedString} ${conditionString}`;
-
+    console.log(query);
     this.options.configuration.query.query = query;
 
     try {

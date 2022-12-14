@@ -61,4 +61,21 @@ router.post('/refresh_token', auth, verifyRefreshToken, UserController.refreshTo
  */
 router.get('/secure', auth, UserController.secure);
 
+/**
+ * Update User Info
+ * @name put/update_user_info
+ * @function
+ * @returns {object}
+ * @private
+ * @param {object} request - Express request
+ * @param {object} response - Express response
+ * @param {callback} next - Express next function
+ * @property {string} req.body.name - Name of user
+ * @property {string} req.body.email - Email of user
+ * @property {string} req.body.phone - Phone of user
+ * @property {string} req.body.password - Password of user
+ * @property {string} req.body.newPassword - New password of user
+ */
+router.put('/update_user_info', auth, clientValidator, UserController.updateUserInfo);
+
 module.exports = router;

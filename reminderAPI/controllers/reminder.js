@@ -160,7 +160,9 @@ exports.deleteReminder = async (req, res, next) => {
       auth: authClient,
     };
 
-    await cloudscheduler.projects.locations.jobs.delete(request);
+    if (process.env.NODE_ENV === 'production') {
+      await cloudscheduler.projects.locations.jobs.delete(request);
+    }
 
     const queryParams = {
       updates: [{ colName: 'terminated', colVal: true }],

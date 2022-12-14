@@ -50,7 +50,7 @@ if (process.env.NODE_ENV === "production") {
 
 app.use("/", async (req, res, next) => {
   res.send({
-    message: 'Hello'
+    message: 'You are hitting the wrong endpoint'
   });
 });
 
