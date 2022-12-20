@@ -428,15 +428,6 @@ exports.updateUserInfo = async (req, res, next) => {
 
     await db.updateRow(Users, updateColData.updates, updateColData.conditions);
 
-    for (let i in updateColData.updates) {
-      let colObj = updateColData.updates;
-      if (colObj[i].colName === 'phone') {
-        req.user[colObj[i].colName] = cryptr.decrypt(colObj[i].colVal);
-      } else {
-        req.user[colObj[i].colName] = colObj[i].colVal;
-      }
-    }
-
     const payload = {
       user: {
         uuid: req.user.uuid,
@@ -446,7 +437,16 @@ exports.updateUserInfo = async (req, res, next) => {
         date_created: req.user.date_created,
       },
     };
-    
+
+    for (let i in updateColData.updates) {
+      let colObj = updateColData.updates;
+      if (colObj[i].colName === 'phone') {
+        payload.user[colObj[i].colName] = cryptr.decrypt(colObj[i].colVal);
+      } else {
+        payload.user[colObj[i].colName] = colObj[i].colVal;
+      }
+    }
+
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
       expiresIn: tokenExpiration,
     });
