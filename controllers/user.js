@@ -389,22 +389,22 @@ exports.updateUserInfo = async (req, res, next) => {
 
     for (let i in req.body) {
       switch (true) {
-        case !isEmpty(req.body[i]) && i === "name":
+        case !isEmpty(req.body[i]) && i === "name" && req.body.name !== req.user.name:
           updateColData.updates.push({
             colName: "name",
             colVal: req.body.name,
           });
           break;
-        case !isEmpty(req.body[i]) && i === "email":
+        case !isEmpty(req.body[i]) && i === "email" && req.body.email !== req.user.email:
           updateColData.updates.push({
             colName: "email",
             colVal: req.body.email,
           });
           break;
-        case !isEmpty(req.body[i]) && i === "phone":
+        case !isEmpty(req.body[i]) && i === "phone" && req.body.phone !== req.user.phone:
           updateColData.updates.push({
             colName: "phone",
-            colVal: cryptr.encrypt(phone),
+            colVal: cryptr.encrypt(req.body.phone),
           });
           break;
         case !isEmpty(req.body[i]) && i === "newPassword":
@@ -420,13 +420,48 @@ exports.updateUserInfo = async (req, res, next) => {
           break;
       }
     }
-
-    console.log(updateColData);
+    if (isEmpty(updateColData.updates)) {
+      return res.status(300).json({
+        message: 'There were no updates to be made when making this request'
+      });
+    }
 
     await db.updateRow(Users, updateColData.updates, updateColData.conditions);
-    return res.status(200).json({
-      message: "Your information has been saved",
+
+    for (let i in updateColData.updates) {
+      let colObj = updateColData.updates;
+      if (colObj[i].colName === 'phone') {
+        req.user[colObj[i].colName] = cryptr.decrypt(colObj[i].colVal);
+      } else {
+        req.user[colObj[i].colName] = colObj[i].colVal;
+      }
+    }
+
+    const payload = {
+      user: {
+        uuid: req.user.uuid,
+        name: req.user.name,
+        email: req.user.email,
+        phone: req.user.phone,
+        date_created: req.user.date_created,
+      },
+    };
+    
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: tokenExpiration,
     });
+    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
+      expiresIn: tokenExpiration,
+    });
+
+    const response = {
+      message: "Your information has been saved",
+      updatedUser: payload.user,
+      token,
+      refreshToken, 
+    };
+
+    return res.status(200).json(response);
   } catch (err) {
     console.log(err);
     return res.status(500).json({

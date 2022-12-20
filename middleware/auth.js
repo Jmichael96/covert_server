@@ -19,6 +19,7 @@ module.exports = async function (req, res, next) {
       }
       else {
         req.user = decoded.user;
+        console.log('THIS IS THE MIDDLESWARE JWT AUTH ', req.user);
         next();
       }
     });
