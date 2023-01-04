@@ -110,4 +110,16 @@ router.delete('/delete_reminder', auth, reminder.deleteReminder);
  */
 router.get('/fetch_reminder/:reminderId', auth, reminder.fetchReminder);
 
+/**
+ * Update user's reminder
+ * 
+ * @name Update reminder
+ * @route {PUT} /api/covert_server/reminders/update_reminder
+ * @headerparam {String} Authorization The bearer token you're given after you login to Covert Server
+ * @headerparam {String} client-id The unique client-id given to you by the owner
+ * @headerparam {String} client-secret The unique client-secret given to you by the owner
+ * @headerparam {String} Content-Type application/json
+ */
+router.put('/update_reminder', auth, reminder.updateReminder);
+
 module.exports = router;
