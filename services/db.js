@@ -77,12 +77,14 @@ class DB_Handler {
     let updatedString = this.concatUpdateConditions(updates);
     let conditionString = this.concatWhereConditions(conditions);
     let query = `UPDATE \`${this.DATASET}.${table}\` SET ${updatedString} ${conditionString}`;
+    
     console.log(query);
+
     this.options.configuration.query.query = query;
 
     try {
       const response = await this.bigquery.createJob(this.options);
-      let job = response[0];
+      const job = response[0];
       return job;
     } catch (err) {
       console.log('ERROR: =========>>>>>>>>>>');

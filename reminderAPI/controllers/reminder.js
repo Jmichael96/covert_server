@@ -45,7 +45,7 @@ exports.setReminder = async (req, res, next) => {
     reminder_message: req.body.reminder_message,
     date_created: moment(new Date()).format("YYYY-MM-DD"),
     terminated: false,
-    price: req.body.price ? req.body.price : 0,
+    price: req.body.price ? Number(req.body.price) : 0,
     deposit: req.body.deposit ? true : false,
   };
 
@@ -255,15 +255,49 @@ exports.updateReminder = async (req, res, next) => {
       message: "Please make sure a reminder ID is passed in",
     });
   }
-
   try {
-    const authClient = await authorizeGCP();
+    const db = new DB_Handler();
+    const fetchColData = [
+      { colName: "uuid", colVal: req.query.reminderId },
+      { colName: "user_id", colVal: req.user.uuid },
+    ];
+    const foundReminder = await db.fetchQuery(Reminders, fetchColData);
+
+    let formData = {
+      uuid: req.query.reminderId,
+      user_id: req.user.uuid,
+      reminder_type: req.body.reminder_type,
+      date_due: req.body.date_due,
+      alert_days_prior: req.body.alert_days_prior,
+      notify: notifyDict[req.body.notify],
+      repeat: req.body.repeat,
+      reminder_time: req.body.reminder_time,
+      reminder_message: req.body.reminder_message,
+      terminated: false,
+      price: req.body.price ? Number(req.body.price) : 0,
+      deposit: req.body.deposit ? true : false,
+    };
+
+    if (isEmpty(foundReminder)) {
+      return res.status(404).json({
+        message:
+          "Could not find the reminder you wanted to update. Please try again later",
+      });
+    }
 
     if (process.env.NODE_ENV === "production") {
-      let utcMoment = moment.utc(`${req.body.date_due}T${req.body.reminder_time}`);
-      let utcDate = new Date(utcMoment);
+      const authClient = await authorizeGCP();
+      let utcMoment = moment.utc(
+        `${req.body.date_due}T${req.body.reminder_time}`
+      );
 
-      const schedule = cronJobBuilder(utcDate, req.body.notify, req.body.alert_days_prior);
+      let utcDate = new Date(utcMoment);
+      console.log(utcDate, formData.notify);
+      const schedule = cronJobBuilder(
+        utcDate,
+        formData.notify,
+        req.body.alert_days_prior
+      );
       console.log(schedule);
 
       // const job = {
@@ -284,41 +318,48 @@ exports.updateReminder = async (req, res, next) => {
       //   description: reminder_message,
       //   timeZone: "America/Chicago",
       // };
-      let formData = {
-        uuid: req.body.uui,
-        user_id: req.user.uuid,
-        reminder_type: req.body.reminder_type,
-        date_due: req.body.date_due,
-        alert_days_prior: req.body.alert_days_prior,
-        notify: notifyDict[req.body.notify],
-        repeat: req.body.repeat,
-        reminder_time: (req.body.reminder_time += ":00"),
-        reminder_message: req.body.reminder_message,
-        date_created: moment(new Date()).format("YYYY-MM-DD"),
-        terminated: false,
-        price: req.body.price ? req.body.price : 0,
-        deposit: req.body.deposit ? true : false,
-      };
 
       const patchData = {
         name: req.body.job_name,
         httpTarget: {
-          body: Buffer.from(JSON.stringify(formData))
+          body: Buffer.from(JSON.stringify(formData)),
         },
         description: req.body.reminder_message,
         timeZone: "America/Chicago",
       };
-      
+
       console.log(patchData);
 
-      await cloudscheduler.projects.locations.jobs.patch();
+      // await cloudscheduler.projects.locations.jobs.patch();
     }
 
+    let updateColData = {
+      updates: [],
+      conditions: [
+        { colName: "uuid", colVal: req.query.reminderId },
+        { colName: "user_id", colVal: req.user.uuid },
+      ],
+    };
+
+    for (let val in formData) {
+      updateColData.updates.push({
+        colName: val,
+        colVal: typeof(formData[val]) === "string" ? formData[val].replace(/'/g, "\\'") : formData[val],
+      });
+    }
+
+    await db.updateRow(
+      Reminders,
+      updateColData.updates,
+      updateColData.conditions
+    );
+    console.log("updated row successfullly");
     return res.status(200).json({
       message: "Your reminder has been successfully updated",
       updatedReminder: req.body,
     });
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
       message: "An error occurred",
     });
