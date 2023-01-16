@@ -360,7 +360,10 @@ exports.updateReminder = async (req, res, next) => {
 
     return res.status(200).json({
       message: "Your reminder has been successfully updated",
-      updatedReminder: req.body,
+      updatedReminder: {
+        ...req.body,
+        notify: notifyDict[req.body.notify]
+      },
     });
   } catch (err) {
     console.log(err);
