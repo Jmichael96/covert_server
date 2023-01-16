@@ -11,6 +11,7 @@ const cloudscheduler = google.cloudscheduler("v1");
 const CLOUD_SCHEDULER_PARENT = process.env.CLOUD_SCHEDULER_PARENT;
 const PROD_URL = process.env.PROD_URL;
 const cronJobBuilder = require("../services/cronJobBuilder");
+const { encodeBase64 } = require("bcryptjs");
 
 /**
  * Create a new reminder
@@ -292,45 +293,45 @@ exports.updateReminder = async (req, res, next) => {
       );
 
       let utcDate = new Date(utcMoment);
-      console.log(utcDate, formData.notify);
       const schedule = cronJobBuilder(
         utcDate,
         formData.notify,
         req.body.alert_days_prior
       );
-      console.log(schedule);
-
-      // const job = {
-      //   name: cronJobName,
-      //   httpTarget: {
-      //     uri: `${PROD_URL}${endpoint}`,
-      //     httpMethod: "POST",
-      //     body: Buffer.from(JSON.stringify(constructedBodyObj)), // must use a base64 str for this request
-      //     headers: {
-      //       "client-id": process.env.CLIENT_ID,
-      //       "client-secret": process.env.CLIENT_SECRET,
-      //       "gcp-client-id": process.env.GCP_ID,
-      //       "gcp-client-secret": process.env.GCP_SECRET,
-      //       "Content-Type": "application/json",
-      //     },
-      //   },
-      //   schedule: schedule,
-      //   description: reminder_message,
-      //   timeZone: "America/Chicago",
-      // };
-
-      const patchData = {
-        name: req.body.job_name,
-        httpTarget: {
-          body: Buffer.from(JSON.stringify(formData)),
-        },
-        description: req.body.reminder_message,
-        timeZone: "America/Chicago",
+      const cronJobName = `${CLOUD_SCHEDULER_PARENT}/jobs/${req.body.job_name}`;
+      const combinedFormBody = {
+        cronJobName,
+        ...formData
       };
 
-      console.log(patchData);
+      const cloudReq = {
+        name: req.body.job_name,
+        updateMask: 'httpTarget,description,timeZone,schedule',
+        resource: {
+          description: formData.reminder_message,
+          httpTarget: {
+            uri: `${PROD_URL}/api/covert_server/reminders/notify`,
+            httpMethod: "POST",
+            body: Buffer.from(JSON.stringify(combinedFormBody)).toString('base64'), // must use a base64 str for this request
+            headers: {
+              'client-id': process.env.CLIENT_ID,
+              'client-secret': process.env.CLIENT_SECRET,
+              'gcp-client-id': process.env.GCP_ID,
+              'gcp-client-secret': process.env.GCP_SECRET,
+              'Content-Type': 'application/json'
+            },
+          },
+          schedule: schedule,
+          timeZone: 'America/Chicago'
+        },
+        auth: authClient,
+      };
 
-      // await cloudscheduler.projects.locations.jobs.patch();
+      const cloudScheduleRes = (
+        await cloudscheduler.projects.locations.jobs.patch(cloudReq)
+      ).data;
+
+      console.log('========>>>>>>>>>> Result', cloudScheduleRes);
     }
 
     let updateColData = {
@@ -344,7 +345,10 @@ exports.updateReminder = async (req, res, next) => {
     for (let val in formData) {
       updateColData.updates.push({
         colName: val,
-        colVal: typeof(formData[val]) === "string" ? formData[val].replace(/'/g, "\\'") : formData[val],
+        colVal:
+          typeof formData[val] === "string"
+            ? formData[val].replace(/'/g, "\\'")
+            : formData[val],
       });
     }
 
@@ -353,7 +357,7 @@ exports.updateReminder = async (req, res, next) => {
       updateColData.updates,
       updateColData.conditions
     );
-    console.log("updated row successfullly");
+
     return res.status(200).json({
       message: "Your reminder has been successfully updated",
       updatedReminder: req.body,
