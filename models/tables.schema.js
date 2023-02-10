@@ -24,7 +24,10 @@ module.exports = [
       { name: 'reminder_time', type: 'TIME', mode: 'REQUIRED' },
       { name: 'reminder_message', type: 'STRING', mode: 'REQUIRED' },
       { name: 'terminated', type: 'BOOLEAN', mode: 'REQUIRED' },
-      { name: 'job_name', type: 'STRING', mode: 'REQUIRED' }
+      { name: 'job_name', type: 'STRING', mode: 'REQUIRED' },
+      { name: 'price', type: 'FLOAT' },
+      { name: 'deposit', type: 'BOOLEAN' },
+      { name: 'title', type: 'STIRNG', mode: 'REQUIRED' }
     ]
   }
 ];

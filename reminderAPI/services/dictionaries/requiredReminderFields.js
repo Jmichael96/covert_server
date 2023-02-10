@@ -5,5 +5,6 @@ module.exports = {
   'alert_days_prior': true,
   'repeat': true,
   'reminder_time': true,
-  'reminder_message': true
+  'reminder_message': true,
+  'title': true
 };

@@ -48,6 +48,7 @@ exports.setReminder = async (req, res, next) => {
     terminated: false,
     price: req.body.price ? Number(req.body.price) : 0,
     deposit: req.body.deposit ? true : false,
+    title: req.body.title
   };
 
   try {
@@ -277,6 +278,7 @@ exports.updateReminder = async (req, res, next) => {
       terminated: false,
       price: req.body.price ? Number(req.body.price) : 0,
       deposit: req.body.deposit ? true : false,
+      title: req.body.title
     };
 
     if (isEmpty(foundReminder)) {
@@ -362,7 +364,13 @@ exports.updateReminder = async (req, res, next) => {
       message: "Your reminder has been successfully updated",
       updatedReminder: {
         ...req.body,
-        notify: notifyDict[req.body.notify]
+        notify: notifyDict[req.body.notify],
+        date_due: {
+          value: req.body.date_due
+        },
+        reminder_time: {
+          value: req.body.reminder_time
+        }
       },
     });
   } catch (err) {
